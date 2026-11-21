@@ -253,7 +253,7 @@ render();
 </style>
 <script>
 // 联机测试层：Quick Tunnel 地址仅供临时验收，演示模式仍使用 localStorage。
-const API_BASE='https://cho-essence-policies-wiki.trycloudflare.com';
+const API_BASE='https://disturbed-cherry-ellen-pin.trycloudflare.com';
 let liveToken=sessionStorage.getItem('vehicle_token')||'',liveUser=sessionStorage.getItem('vehicle_user')||'';
 const note=document.querySelector('.note');
 note.insertAdjacentHTML('afterend',`<div class="modebar"><div class="row"><div><b id="modeTitle">演示模式</b><div class="tiny muted" id="modeDesc">数据只保存在当前浏览器</div></div><button class="btn alt" id="modeButton" onclick="openLiveLogin()">联机测试</button></div></div>`);
