@@ -138,6 +138,7 @@
 </section>
 </main>
 </div>
+<button class="refresh-fab" id="refreshButton" onclick="refreshData()" aria-label="刷新数据" title="刷新数据">↻<span>刷新</span></button>
 <nav class="tabs">
 <button class="tab active" data-page="home" onclick="switchPage('home')">
 <i>⌂</i>首页</button>
@@ -246,7 +247,7 @@ render=function(){baseRender();let sold=db.cars.filter(c=>c.status==='sold'),ong
 render();
 </script>
 <style>
-.modebar{background:#eef4ff;border:1px solid #cfdcff;border-radius:12px;padding:12px;margin-bottom:12px}.modebar .row{align-items:flex-start}.modebar b{color:#2449b8}.modebar .btn{min-height:38px;padding:8px 12px}.busy{pointer-events:none;opacity:.6}
+.modebar{background:#eef4ff;border:1px solid #cfdcff;border-radius:12px;padding:12px;margin-bottom:12px}.modebar .row{align-items:flex-start}.modebar b{color:#2449b8}.modebar .btn{min-height:38px;padding:8px 12px}.busy{pointer-events:none;opacity:.6}.refresh-fab{position:fixed;right:max(14px,calc((100vw - 650px)/2 + 14px));bottom:calc(72px + env(safe-area-inset-bottom));z-index:6;width:54px;height:54px;border:0;border-radius:50%;background:#315fe7;color:#fff;box-shadow:0 8px 24px #1e3b9260;font-size:25px;line-height:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer}.refresh-fab span{font-size:10px;font-weight:700}.refresh-fab:disabled{opacity:.65}
 </style>
 <script>
 // 联机测试层：Quick Tunnel 地址仅供临时验收，演示模式仍使用 localStorage。
@@ -255,6 +256,7 @@ let liveToken=sessionStorage.getItem('vehicle_token')||'',liveUser=sessionStorag
 const note=document.querySelector('.note');
 note.insertAdjacentHTML('afterend',`<div class="modebar"><div class="row"><div><b id="modeTitle">演示模式</b><div class="tiny muted" id="modeDesc">数据只保存在当前浏览器</div></div><button class="btn alt" id="modeButton" onclick="openLiveLogin()">联机测试</button></div></div>`);
 function setBusy(on){document.body.classList.toggle('busy',on)}
+async function refreshData(){let b=$('refreshButton');b.disabled=true;b.querySelector('span').textContent='刷新中';try{if(liveToken)await loadLive();else{try{db=JSON.parse(localStorage.getItem('carDemoV1'))||seed()}catch{db=seed()}render()}}catch(e){alert(e.message)}finally{b.disabled=false;b.querySelector('span').textContent='刷新'}}
 async function api(method,path,body){let headers={'Content-Type':'application/json'};if(liveToken)headers.Authorization='Bearer '+liveToken;let res;try{res=await fetch(API_BASE+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body)})}catch{throw new Error('后台暂时无法连接；本次操作没有保存，请勿重复提交。')}let data=await res.json().catch(()=>({}));if(!res.ok){if(res.status===401&&path!='/auth/login')logoutLive(false);throw new Error(data.error||`服务器错误 ${res.status}`)}return data}
 function updateMode(){let on=!!liveToken;$('modeTitle').textContent=on?'联机测试模式':'演示模式';$('modeDesc').textContent=on?`已登录：${liveUser} · 数据保存到本机测试数据库`:'数据只保存在当前浏览器';$('modeButton').textContent=on?'退出联机':'联机测试';$('modeButton').onclick=on?()=>logoutLive(true):openLiveLogin;document.querySelector('.note').textContent=on?'联机测试版：仅使用模拟数据。电脑或 Tunnel 停止时无法保存，页面会明确报错。':'仅供功能体验：使用模拟数据；数据暂存在当前浏览器，不会同步到其他手机，也不是正式账本。正式使用需接后端、登录和备份。'}
 function openLiveLogin(){openModal('登录联机测试',field('loginUser','用户名')+field('loginPass','密码','password')+'<p class="tiny muted">仅限测试账号，请勿录入真实客户资料。</p><button class="btn wide" onclick="loginLive()">登录</button>')}
