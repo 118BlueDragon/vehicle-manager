@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#101c31">
 <title>车辆管家婆 · 体验版</title>
 <style>
@@ -272,6 +272,7 @@ commitPay=function(id){if(!liveToken)return demoCommitPay(id);let amount=num('pa
 commitLedger=function(){if(!liveToken)return demoCommitLedger();let amount=num('lAmount'),note=val('lNote'),date=val('lDate');if(!(amount>0)||!note||!date)return error('请完整填写金额、备注和日期');return liveWrite(()=>api('POST','/api/ledger',{type:val('lType'),amount,note,date}))}
 updateMode();if(liveToken)loadLive().catch(e=>{alert(e.message);logoutLive(false)});
 </script>
+<style>html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}</style>
 </body>
 </html>
 
