@@ -272,7 +272,15 @@ commitPay=function(id){if(!liveToken)return demoCommitPay(id);let amount=num('pa
 commitLedger=function(){if(!liveToken)return demoCommitLedger();let amount=num('lAmount'),note=val('lNote'),date=val('lDate');if(!(amount>0)||!note||!date)return error('请完整填写金额、备注和日期');return liveWrite(()=>api('POST','/api/ledger',{type:val('lType'),amount,note,date}))}
 updateMode();if(liveToken)loadLive().catch(e=>{alert(e.message);logoutLive(false)});
 </script>
-<style>html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}</style>
+<style>
+html,body{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.shell,main,section,.panel{max-width:100%;min-width:0}
+.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.two>*{min-width:0}
+#page-ledger .panel>.two:first-child{gap:8px;align-items:end}
+#page-ledger .panel>.two:first-child .field{min-width:0;margin-bottom:10px}
+#page-ledger input[type="date"]{display:block;width:100%;min-width:0;max-width:100%;height:42px;padding:7px 6px;font-size:16px;line-height:1.2}
+</style>
 </body>
 </html>
 
