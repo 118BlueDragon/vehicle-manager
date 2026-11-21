@@ -245,6 +245,31 @@ const baseRender=render;
 render=function(){baseRender();let sold=db.cars.filter(c=>c.status==='sold'),ongoing=sold.filter(c=>c.sale?.method==='installment'),outstanding=money(sold.reduce((s,c)=>s+due(c),0));$('statDue').textContent=fmt(outstanding);$('dueTotal').textContent=fmt(outstanding);$('overdueTotal').textContent=fmt(ongoing.reduce((s,c)=>s+overdue(c),0));document.querySelectorAll('#carList .item').forEach((el,i)=>{let q=$('searchCar').value.toLowerCase(),cars=db.cars.filter(c=>(filter==='all'||c.status===filter)&&(c.model+c.vin).toLowerCase().includes(q)),c=cars[i];if(c&&!el.querySelector('.edit-car')){let b=document.createElement('button');b.className='btn ghost edit-car';b.textContent='修改车辆';b.onclick=()=>showEdit(c.id);el.appendChild(b)}});let lf=$('ledgerFrom').value,lt=$('ledgerTo').value,ledger=db.ledger.filter(x=>(!lf||x.date>=lf)&&(!lt||x.date<=lt));$('ledgerIn').textContent=fmt(ledger.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0));$('ledgerOut').textContent=fmt(ledger.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0));$('ledgerList').innerHTML=ledger.map(x=>`<div class="listrow row"><div><b>${esc(x.note)}</b><div class="tiny muted">${esc(x.date)}</div></div><b class="${x.type==='income'?'success':'warn'}">${x.type==='income'?'+':'-'}${fmt(x.amount)}</b></div>`).join('')||'<div class="empty">该日期范围暂无记录</div>'}
 render();
 </script>
+<style>
+.modebar{background:#eef4ff;border:1px solid #cfdcff;border-radius:12px;padding:12px;margin-bottom:12px}.modebar .row{align-items:flex-start}.modebar b{color:#2449b8}.modebar .btn{min-height:38px;padding:8px 12px}.busy{pointer-events:none;opacity:.6}
+</style>
+<script>
+// 联机测试层：Quick Tunnel 地址仅供临时验收，演示模式仍使用 localStorage。
+const API_BASE='https://cho-essence-policies-wiki.trycloudflare.com';
+let liveToken=sessionStorage.getItem('vehicle_token')||'',liveUser=sessionStorage.getItem('vehicle_user')||'';
+const note=document.querySelector('.note');
+note.insertAdjacentHTML('afterend',`<div class="modebar"><div class="row"><div><b id="modeTitle">演示模式</b><div class="tiny muted" id="modeDesc">数据只保存在当前浏览器</div></div><button class="btn alt" id="modeButton" onclick="openLiveLogin()">联机测试</button></div></div>`);
+function setBusy(on){document.body.classList.toggle('busy',on)}
+async function api(method,path,body){let headers={'Content-Type':'application/json'};if(liveToken)headers.Authorization='Bearer '+liveToken;let res;try{res=await fetch(API_BASE+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body)})}catch{throw new Error('后台暂时无法连接；本次操作没有保存，请勿重复提交。')}let data=await res.json().catch(()=>({}));if(!res.ok){if(res.status===401&&path!='/auth/login')logoutLive(false);throw new Error(data.error||`服务器错误 ${res.status}`)}return data}
+function updateMode(){let on=!!liveToken;$('modeTitle').textContent=on?'联机测试模式':'演示模式';$('modeDesc').textContent=on?`已登录：${liveUser} · 数据保存到本机测试数据库`:'数据只保存在当前浏览器';$('modeButton').textContent=on?'退出联机':'联机测试';$('modeButton').onclick=on?()=>logoutLive(true):openLiveLogin;document.querySelector('.note').textContent=on?'联机测试版：仅使用模拟数据。电脑或 Tunnel 停止时无法保存，页面会明确报错。':'仅供功能体验：使用模拟数据；数据暂存在当前浏览器，不会同步到其他手机，也不是正式账本。正式使用需接后端、登录和备份。'}
+function openLiveLogin(){openModal('登录联机测试',field('loginUser','用户名')+field('loginPass','密码','password')+'<p class="tiny muted">仅限测试账号，请勿录入真实客户资料。</p><button class="btn wide" onclick="loginLive()">登录</button>')}
+async function loginLive(){setBusy(true);try{let value=await api('POST','/auth/login',{username:val('loginUser'),password:val('loginPass')});liveToken=value.token;liveUser=value.username;sessionStorage.setItem('vehicle_token',liveToken);sessionStorage.setItem('vehicle_user',liveUser);await loadLive();closeModal();switchPage('home')}catch(e){alert(e.message)}finally{setBusy(false)}}
+async function loadLive(){db=await api('GET','/api/state');updateMode();render()}
+async function logoutLive(remote){if(remote)try{await api('POST','/auth/logout',{})}catch{}liveToken='';liveUser='';sessionStorage.removeItem('vehicle_token');sessionStorage.removeItem('vehicle_user');try{db=JSON.parse(localStorage.getItem('carDemoV1'))||seed()}catch{db=seed()}updateMode();render()}
+async function liveWrite(task,success){setBusy(true);try{await task();await loadLive();closeModal();if(success)success()}catch(e){alert(e.message)}finally{setBusy(false)}}
+const demoAddCar=addCar,demoEditCar=editCar,demoCommitSale=commitSale,demoCommitPay=commitPay,demoCommitLedger=commitLedger;
+addCar=function(){if(!liveToken)return demoAddCar();let model=val('mModel'),vin=val('mVin'),buy=num('mBuy');if(!model||!vin)return error('请填写车型和车架号');if(buy<0)return error('进货成本不能为负');return liveWrite(()=>api('POST','/api/cars',{model,vin,buy,date:today()}))}
+editCar=function(id){if(!liveToken)return demoEditCar(id);let model=val('mModel'),vin=val('mVin'),buy=num('mBuy');if(!model||!vin)return error('请填写车型和车架号');return liveWrite(()=>api('PATCH',`/api/cars/${encodeURIComponent(id)}`,{model,vin,buy}))}
+commitSale=function(id){if(!liveToken)return demoCommitSale(id);let price=num('salePrice'),method=val('saleMethod'),down=method==='full'?price:num('saleDown'),periods=method==='full'?0:num('salePeriods'),periodAmount=method==='installment'?num('salePeriodAmount'):0,date=val('saleDate');if(!(price>0)||!date)return error('请填写正确的成交价格和日期');let body={price,method,date,down,periods,periodAmount,cycle:method==='installment'?val('saleCycle'):null,first:method==='installment'?val('saleStart'):null};return liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/sell`,body),()=>switchPage(method==='installment'?'payments':'stock'))}
+commitPay=function(id){if(!liveToken)return demoCommitPay(id);let amount=num('payAmount'),date=val('payDate');if(!(amount>0)||!date)return error('请填写正确的收款金额和日期');return liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/payments`,{amount,date,note:'分期收款'}),()=>showPay(id))}
+commitLedger=function(){if(!liveToken)return demoCommitLedger();let amount=num('lAmount'),note=val('lNote'),date=val('lDate');if(!(amount>0)||!note||!date)return error('请完整填写金额、备注和日期');return liveWrite(()=>api('POST','/api/ledger',{type:val('lType'),amount,note,date}))}
+updateMode();if(liveToken)loadLive().catch(e=>{alert(e.message);logoutLive(false)});
+</script>
 </body>
 </html>
 
