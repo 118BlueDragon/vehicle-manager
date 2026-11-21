@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101c31">
+<title>车辆管家婆 · 体验版</title>
+<style>
+:root{--bg:#f5f7fb;--ink:#19263e;--muted:#7a8598;--blue:#315fe7;--line:#e8ebf1;--green:#10a572}*{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft Yahei",sans-serif;color:var(--ink)}.shell{max-width:650px;margin:auto;min-height:100vh;padding-bottom:90px}.hero{background:linear-gradient(130deg,#142344,#284b8a);padding:24px 18px 22px;color:white;border-radius:0 0 24px 24px}.hero small{opacity:.68}.hero h1{font-size:24px;margin:7px 0 14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:#ffffff16;border:1px solid #ffffff18;padding:11px;border-radius:12px}.stat strong{display:block;font-size:22px}.stat span{font-size:11px;color:#e0e7ff}.section{padding:16px}.panel{background:white;border:1px solid var(--line);border-radius:17px;padding:16px;margin:0 0 12px;box-shadow:0 6px 30px #22325a08}.sectiontitle{display:flex;align-items:center;justify-content:space-between;margin:0 0 13px}.sectiontitle b{font-size:17px}.tag{font-size:11px;background:#ebf0ff;color:#315fe7;padding:4px 8px;border-radius:20px}.muted{color:var(--muted)}.tiny{font-size:12px}.field{margin:0 0 13px}.field label{display:block;font-size:12px;color:#5e6b7d;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;font-size:16px;padding:11px 12px;border:1px solid #dce2eb;border-radius:10px;background:#fff;color:var(--ink);outline:none}.field input:focus,.field select:focus{border-color:var(--blue)}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;padding:11px 14px;font-size:14px;font-weight:600;background:var(--blue);color:white;cursor:pointer;min-height:43px}.btn.alt{background:#eef2ff;color:#3455c9}.btn.ghost{background:#f1f4f8;color:#52617b}.btn.danger{background:#fff0ed;color:#c74640}.btn:disabled{opacity:.5}.wide{width:100%}.tabs{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:3;box-shadow:0 -4px 18px #182a4510}.tab{flex:1;border:none;background:none;padding:10px 2px 7px;color:#8190a5;font-size:11px;cursor:pointer}.tab i{display:block;font-style:normal;font-size:21px}.tab.active{color:var(--blue);font-weight:700}.hidden{display:none}.item{border:1px solid var(--line);padding:13px;border-radius:12px;margin-top:9px}.itemhead{display:flex;justify-content:space-between;align-items:center;gap:8px}.item b{font-size:15px}.item .mono{font:12px ui-monospace,monospace;color:#68748a;overflow-wrap:anywhere}.pill{font-size:11px;border-radius:6px;padding:3px 7px;background:#e9f9f1;color:#128864}.pill.sold{background:#eef0f4;color:#728096}.pill.due{background:#fff3e5;color:#c27a20}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.stack{display:flex;gap:7px;flex-wrap:wrap}.money{font-size:22px;font-weight:800;color:#294ed0}.hr{border:none;border-top:1px solid var(--line);margin:13px 0}.empty{text-align:center;color:#8e98a8;padding:25px 10px}.note{font-size:12px;background:#fff9e9;color:#936b1c;border:1px solid #fff0c3;padding:11px;border-radius:10px;margin-bottom:12px}.modal{position:fixed;inset:0;background:#101a3199;z-index:8;display:flex;align-items:end;justify-content:center}.modal.hidden{display:none}.sheet{background:#fff;width:100%;max-width:650px;padding:20px;border-radius:23px 23px 0 0;max-height:90vh;overflow:auto;padding-bottom:calc(25px + env(safe-area-inset-bottom))}.sheet h2{margin:0 0 16px;font-size:20px}.listrow{border-bottom:1px solid var(--line);padding:10px 0}.listrow:last-child{border:0}.warn{color:#d36634}.success{color:var(--green)}.chip{font-size:12px;background:#f1f4f9;padding:5px 9px;border-radius:7px}.topintro{font-size:12px;color:#d0daef;margin-bottom:12px}
+.shell{padding-bottom:120px}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="hero">
+<small>客户001 · 手机端产品样品</small>
+<h1>车辆管家婆 <span style="font-size:12px;background:#ffffff24;padding:5px 8px;border-radius:8px;vertical-align:middle">演示版</span>
+</h1>
+<p class="topintro">一车一档 · 进销存 · 分期收款 · 收支账本</p>
+<div class="stats">
+<div class="stat">
+<strong id="statStock">0</strong>
+<span>在库车辆</span>
+</div>
+<div class="stat">
+<strong id="statSold">0</strong>
+<span>已售车辆</span>
+</div>
+<div class="stat">
+<strong id="statDue">¥0</strong>
+<span>剩余应收</span>
+</div>
+</div>
+</header>
+<main class="section">
+<div class="note">仅供功能体验：使用模拟数据；数据暂存在当前浏览器，不会同步到其他手机，也不是正式账本。正式使用需接后端、登录和备份。</div>
+<section id="page-home">
+<div class="sectiontitle">
+<b>今日概览</b>
+<span class="tag">老板 / 老板娘</span>
+</div>
+<div class="panel">
+<div class="row">
+<span class="muted">累计销售金额</span>
+<b id="salesTotal">¥0</b>
+</div>
+<hr class="hr">
+<div class="row">
+<span class="muted">已收销售款</span>
+<b id="paidTotal">¥0</b>
+</div>
+<hr class="hr">
+<div class="row">
+<span class="muted">分期待收款</span>
+<b class="warn" id="dueTotal">¥0</b>
+</div>
+</div>
+<div class="panel">
+<div class="sectiontitle">
+<b>快速操作</b>
+</div>
+<div class="two">
+<button class="btn" onclick="switchPage('stock');showAdd()">＋ 车辆入库</button>
+<button class="btn alt" onclick="switchPage('stock')">🚗 选择车辆销售</button>
+<button class="btn alt" onclick="switchPage('payments')">💳 分期收款</button>
+<button class="btn alt" onclick="switchPage('ledger')">🧾 收支记账</button>
+</div>
+</div>
+<div class="panel">
+<b>最近记录</b>
+<div id="activity">
+</div>
+</div>
+</section>
+<section id="page-stock" class="hidden">
+<div class="sectiontitle">
+<b>车辆库存</b>
+<button class="btn" onclick="showAdd()">＋ 入库</button>
+</div>
+<div class="panel">
+<div class="field">
+<input id="searchCar" oninput="render()" placeholder="搜索车型 / 车架号">
+</div>
+<div class="stack">
+<button class="btn ghost" id="filter-all" onclick="setFilter('all')">全部</button>
+<button class="btn ghost" id="filter-stock" onclick="setFilter('stock')">在库</button>
+<button class="btn ghost" id="filter-sold" onclick="setFilter('sold')">已售</button>
+</div>
+<div id="carList">
+</div>
+</div>
+</section>
+<section id="page-payments" class="hidden">
+<div class="sectiontitle">
+<b>分期收款</b>
+<span class="tag">按周 / 按月</span>
+</div>
+<div class="panel">
+<p class="muted tiny">点击客户车辆，查看还款计划并登记每笔实收。</p>
+<div id="paymentList">
+</div>
+</div>
+</section>
+<section id="page-ledger" class="hidden">
+<div class="sectiontitle">
+<b>收支账本</b>
+<button class="btn" onclick="showLedger()">＋ 记一笔</button>
+</div>
+<div class="panel">
+<div class="two">
+<div>
+<span class="muted tiny">手工记账收入</span>
+<div class="money" id="ledgerIn">¥0</div>
+</div>
+<div>
+<span class="muted tiny">手工记账支出</span>
+<div class="money" style="color:#d06352" id="ledgerOut">¥0</div>
+</div>
+</div>
+<hr class="hr">
+<p class="muted tiny">销售收款与手工账分开展示，避免误认为已经自动记账。</p>
+<div id="ledgerList">
+</div>
+</div>
+</section>
+<section id="page-more" class="hidden">
+<div class="sectiontitle">
+<b>功能说明</b>
+</div>
+<div class="panel">
+<b>当前可体验</b>
+<p class="muted">自主新增车辆、按车架号管理、点击售出、一次性/分期、每周或每月还款计划、逐笔登记收款、收支账本。</p>
+<hr class="hr">
+<b>正式版再补充</b>
+<p class="muted">双账号登录、数据库永久保存、自动备份、账单导出、修改与撤销留痕、访问权限及安全连接。</p>
+<button class="btn danger wide" onclick="resetDemo()">重置演示数据</button>
+</div>
+</section>
+</main>
+</div>
+<nav class="tabs">
+<button class="tab active" data-page="home" onclick="switchPage('home')">
+<i>⌂</i>首页</button>
+<button class="tab" data-page="stock" onclick="switchPage('stock')">
+<i>🚗</i>车辆</button>
+<button class="tab" data-page="payments" onclick="switchPage('payments')">
+<i>▤</i>分期</button>
+<button class="tab" data-page="ledger" onclick="switchPage('ledger')">
+<i>￥</i>账本</button>
+<button class="tab" data-page="more" onclick="switchPage('more')">
+<i>⚙</i>说明</button>
+</nav>
+<div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()">
+<div class="sheet">
+<div class="row">
+<h2 id="modalTitle">
+</h2>
+<button class="btn ghost" onclick="closeModal()">关闭</button>
+</div>
+<div id="modalBody">
+</div>
+</div>
+</div>
+<script>
+const seed=()=>({cars:[{id:'c1',model:'电动车 A款',vin:'DEMO-A00001',buy:3800,status:'stock',date:'2026-11-21'},{id:'c2',model:'电动车 B款',vin:'DEMO-B00002',buy:4700,status:'stock',date:'2026-11-21'},{id:'c3',model:'电动车 A款',vin:'DEMO-A00003',buy:3800,status:'sold',date:'2026-11-20',sale:{price:5600,method:'installment',date:'2026-11-20',down:1600,periods:4,cycle:'month',payments:[{date:'2026-11-20',amount:1600,note:'首付'}]}}],ledger:[{id:'l1',type:'expense',amount:120,date:'2026-11-21',note:'店铺杂费（示例）'}]});
+let db;try{db=JSON.parse(localStorage.getItem('carDemoV1'))||seed()}catch{db=seed()};let filter='all';const $=id=>document.getElementById(id), fmt=n=>'¥'+Number(n||0).toLocaleString('zh-CN',{maximumFractionDigits:2}), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])), today=()=>new Date().toLocaleDateString('sv-SE');const money=n=>Math.round(Number(n||0)*100)/100;
+function save(){try{localStorage.setItem('carDemoV1',JSON.stringify(db))}catch(e){alert('此浏览器无法保存演示数据，请勿用于真实业务。')}render()};function switchPage(p){['home','stock','payments','ledger','more'].forEach(x=>$('page-'+x).classList.toggle('hidden',x!==p));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.page===p));window.scrollTo(0,0);render()};function setFilter(f){filter=f;render()};function openModal(t,html){$('modalTitle').textContent=t;$('modalBody').innerHTML=html;$('modal').classList.remove('hidden')};function closeModal(){$('modal').classList.add('hidden')};function field(id,label,type='text',value='',extra=''){return `<div class="field">
+<label>${label}</label>
+<input id="${id}" type="${type}" value="${esc(value)}" ${extra}>
+</div>`};function selectField(id,label,options){return `<div class="field">
+<label>${label}</label>
+<select id="${id}">${options.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select>
+</div>`};function val(id){return $(id).value.trim()};function num(id){return Number(val(id))};function error(s){alert(s);return false};function showAdd(){openModal('车辆入库',field('mModel','车型 / 商品名称')+field('mVin','车架号（每台车唯一）')+field('mBuy','进货成本（元，可不填）','number','', 'min="0" step="0.01"')+'<button class="btn wide" onclick="addCar()">确认入库</button>')};function addCar(){let model=val('mModel'),vin=val('mVin');if(!model||!vin)return error('请填写车型和车架号');if(db.cars.some(x=>x.vin.toLowerCase()===vin.toLowerCase()))return error('该车架号已经登记过');if(num('mBuy')<0)return error('进货成本不能为负');db.cars.unshift({id:crypto.randomUUID(),model,vin,buy:money(num('mBuy')),status:'stock',date:today()});save();closeModal()}
+function showSale(id){let c=db.cars.find(x=>x.id===id);if(!c||c.status!=='stock')return;openModal('登记销售 · '+c.model,`<p class="tiny muted">车架号：${esc(c.vin)}</p>${field('salePrice','成交价格（元）','number','', 'min="0" step="0.01"')}${selectField('saleMethod','付款方式',[['full','一次性付款'],['installment','分期付款']])}<div id="installFields" class="hidden">${field('saleDown','首付款（元）','number','0','min="0" step="0.01"')}${field('salePeriods','分期期数','number','6','min="1" step="1"')}${selectField('saleCycle','还款周期',[['month','每月'],['week','每周']])}${field('saleStart','首次还款日期','date',today())}</div>${field('saleDate','销售日期','date',today())}<button class="btn wide" onclick="commitSale('${id}')">确认售出</button>`);$('saleMethod').onchange=()=>$('installFields').classList.toggle('hidden',val('saleMethod')!=='installment');}
+function commitSale(id){let price=num('salePrice'),method=val('saleMethod'),down=method==='full'?price:num('saleDown'),periods=method==='full'?0:num('salePeriods');if(!(price>0))return error('成交价格需大于0');if(down<0||down>price)return error('首付不能小于0或大于成交价格');if(method==='installment'&&(!Number.isInteger(periods)||periods<1||periods>520))return error('期数请填1～520');let date=val('saleDate'),first=method==='installment'?val('saleStart'):null;if(!date||(method==='installment'&&!first))return error('请填写日期');let c=db.cars.find(x=>x.id===id);c.status='sold';c.sale={price:money(price),method,date,down:money(down),periods,cycle:method==='installment'?val('saleCycle'):null,first,payments:down>0?[{date,amount:money(down),note:method==='full'?'一次性付款':'首付'}]:[]};save();closeModal();switchPage(method==='installment'?'payments':'stock')}
+function paid(c){return money((c.sale?.payments||[]).reduce((s,p)=>s+p.amount,0))};function due(c){return money(Math.max(0,(c.sale?.price||0)-paid(c)))};function addPeriod(date,i,cycle){let d=new Date(date+'T12:00:00');if(cycle==='week')d.setDate(d.getDate()+7*i);else {let orig=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+i);let last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(orig,last));}return d.toLocaleDateString('sv-SE')}
+function installmentTable(c){let s=c.sale;if(!s||s.method!=='installment')return '';let principal=money(s.price-s.down),unit=money(principal/s.periods),rows=[];let cumulative=s.down;for(let i=0;i<s.periods;i++){let amount=i===s.periods-1?money(principal-unit*(s.periods-1)):unit;cumulative=money(cumulative+amount);rows.push(`<div class="listrow row">
+<span>第${i+1}期 <span class="muted tiny">${addPeriod(s.first,i,s.cycle)}</span>
+</span>
+<b>${fmt(amount)}</b>
+</div>`)}return rows.join('')}
+function showPay(id){let c=db.cars.find(x=>x.id===id),s=c.sale;openModal('分期收款',`<p class="tiny muted">${esc(c.model)} · ${esc(c.vin)}</p>
+<div class="panel" style="background:#f7f9fc">
+<div class="row">
+<span>成交总价</span>
+<b>${fmt(s.price)}</b>
+</div>
+<div class="row">
+<span>累计已收</span>
+<b class="success">${fmt(paid(c))}</b>
+</div>
+<div class="row">
+<span>未收余额</span>
+<b class="warn">${fmt(due(c))}</b>
+</div>
+</div>${due(c)>0?`${field('payAmount','本次实际收到金额（元）','number',due(c),'min="0" step="0.01"')}${field('payDate','收款日期','date',today())}<button class="btn wide" onclick="commitPay('${id}')">登记收款</button>`:'<p class="success">这台车的款项已收齐</p>'}<hr class="hr">
+<b>约定还款计划</b>${installmentTable(c)}<hr class="hr">
+<b>实际收款明细</b>${s.payments.map(p=>`<div class="listrow row">
+<span class="tiny muted">${esc(p.date)} · ${esc(p.note)}</span>
+<b>${fmt(p.amount)}</b>
+</div>`).join('')||'<p class="muted">暂无收款</p>'}`)};function commitPay(id){let c=db.cars.find(x=>x.id===id),amt=num('payAmount'),date=val('payDate');if(!(amt>0)||amt>due(c))return error('收款金额需大于0，且不能超过未收余额');if(!date)return error('请填写收款日期');c.sale.payments.push({date,amount:money(amt),note:'分期收款'});save();showPay(id)}
+function showLedger(){openModal('新增收支记录',selectField('lType','类型',[['income','收入'],['expense','支出']])+field('lAmount','金额（元）','number','','min="0" step="0.01"')+field('lNote','备注（例如租金、进货款等）')+field('lDate','日期','date',today())+'<button class="btn wide" onclick="commitLedger()">保存记录</button>')};function commitLedger(){let amount=num('lAmount'),note=val('lNote'),date=val('lDate');if(!(amount>0)||!note||!date)return error('请完整填写金额、备注和日期');db.ledger.unshift({id:crypto.randomUUID(),type:val('lType'),amount:money(amount),note,date});save();closeModal()};function resetDemo(){if(confirm('确定恢复最初模拟数据？本浏览器的演示操作将被清空。')){db=seed();save();switchPage('home')}}
+function render(){let sold=db.cars.filter(c=>c.status==='sold'),ongoing=sold.filter(c=>c.sale?.method==='installment');$('statStock').textContent=db.cars.length-sold.length;$('statSold').textContent=sold.length;let outstanding=money(ongoing.reduce((s,c)=>s+due(c),0));$('statDue').textContent=fmt(outstanding);$('salesTotal').textContent=fmt(sold.reduce((s,c)=>s+c.sale.price,0));$('paidTotal').textContent=fmt(sold.reduce((s,c)=>s+paid(c),0));$('dueTotal').textContent=fmt(outstanding);let q=$('searchCar').value.toLowerCase();let list=db.cars.filter(c=>(filter==='all'||c.status===filter)&&(c.model+c.vin).toLowerCase().includes(q));$('carList').innerHTML=list.map(c=>`<div class="item">
+<div class="itemhead">
+<b>${esc(c.model)}</b>
+<span class="pill ${c.status==='sold'?'sold':''}">${c.status==='sold'?'已售':'在库'}</span>
+</div>
+<div class="mono">车架号：${esc(c.vin)}</div>
+<p class="muted tiny">入库：${esc(c.date)}${c.status==='sold'?' · 售价：'+fmt(c.sale.price):''}</p>${c.status==='stock'?`<button class="btn wide" onclick="showSale('${c.id}')">选择此车 · 登记售出</button>`:`<span class="chip">${c.sale.method==='full'?'一次性付款':'分期付款'}</span>`}</div>`).join('')||'<div class="empty">暂无匹配车辆</div>';['all','stock','sold'].forEach(f=>{$('filter-'+f).className='btn '+(filter===f?'alt':'ghost')});$('paymentList').innerHTML=ongoing.map(c=>`<div class="item">
+<div class="itemhead">
+<b>${esc(c.model)}</b>
+<span class="pill ${due(c)?'due':''}">${due(c)?'待收款':'已结清'}</span>
+</div>
+<p class="mono">${esc(c.vin)}</p>
+<div class="row">
+<span class="tiny muted">${c.sale.cycle==='week'?'每周':'每月'} · ${c.sale.periods}期</span>
+<b class="warn">未收 ${fmt(due(c))}</b>
+</div>
+<button style="margin-top:10px" class="btn alt wide" onclick="showPay('${c.id}')">查看计划 / 登记收款</button>
+</div>`).join('')||'<div class="empty">暂无分期销售</div>';$('ledgerIn').textContent=fmt(db.ledger.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0));$('ledgerOut').textContent=fmt(db.ledger.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0));$('ledgerList').innerHTML=db.ledger.map(x=>`<div class="listrow row">
+<div>
+<b>${esc(x.note)}</b>
+<div class="tiny muted">${esc(x.date)}</div>
+</div>
+<b class="${x.type==='income'?'success':'warn'}">${x.type==='income'?'+':'-'}${fmt(x.amount)}</b>
+</div>`).join('')||'<div class="empty">还没有记账记录</div>';$('activity').innerHTML=[...sold.map(c=>({date:c.sale.date,text:'售出 '+c.model+' · '+c.vin})),...db.ledger.map(x=>({date:x.date,text:(x.type==='income'?'收入 ':'支出 ')+x.note}))].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5).map(x=>`<div class="listrow">
+<span class="muted tiny">${esc(x.date)}</span>
+<div>${esc(x.text)}</div>
+</div>`).join('')||'<p class="empty">暂无记录</p>'};render();
+</script>
+<script>
+// 演示版增强层：保留原项目结构，补齐修改、逾期及日期查询。
+document.querySelector('#dueTotal').previousElementSibling.textContent='剩余未收款';
+document.querySelector('#dueTotal').parentElement.insertAdjacentHTML('afterend','<hr class="hr"><div class="row"><span class="muted">其中已逾期</span><b class="warn" id="overdueTotal">¥0</b></div>');
+document.querySelector('#page-ledger .panel').insertAdjacentHTML('afterbegin','<div class="two"><div class="field"><label>开始日期</label><input id="ledgerFrom" type="date" oninput="render()"></div><div class="field"><label>结束日期</label><input id="ledgerTo" type="date" oninput="render()"></div></div>');
+
+function showEdit(id){let c=db.cars.find(x=>x.id===id);openModal('修改车辆',field('mModel','车型','text',c.model)+field('mVin','车架号','text',c.vin)+field('mBuy','进货成本','number',c.buy,'min="0" step="0.01"')+`<button class="btn wide" onclick="editCar('${id}')">保存修改</button>`)}
+function editCar(id){let c=db.cars.find(x=>x.id===id),model=val('mModel'),vin=val('mVin');if(!model||!vin)return error('请填写车型和车架号');if(db.cars.some(x=>x.id!==id&&x.vin.toLowerCase()===vin.toLowerCase()))return error('该车架号已经登记过');if(num('mBuy')<0)return error('进货成本不能为负');Object.assign(c,{model,vin,buy:money(num('mBuy'))});save();closeModal()}
+function showSale(id){let c=db.cars.find(x=>x.id===id);if(!c||c.status!=='stock')return;openModal('登记销售 · '+c.model,`<p class="tiny muted">车架号：${esc(c.vin)}</p>${field('salePrice','成交价格（元）','number','', 'min="0" step="0.01"')}${selectField('saleMethod','付款方式',[['full','一次性付款'],['installment','分期付款']])}<div id="installFields" class="hidden">${field('saleDown','首付款（元）','number','0','min="0" step="0.01"')}${field('salePeriods','分期期数','number','6','min="1" step="1"')}${field('salePeriodAmount','每期金额（留空自动平均）','number','','min="0" step="0.01"')}${selectField('saleCycle','还款周期',[['month','每月'],['week','每周']])}${field('saleStart','首次还款日期','date',today())}</div>${field('saleDate','销售日期','date',today())}<button class="btn wide" onclick="commitSale('${id}')">确认售出</button>`);$('saleMethod').onchange=()=>$('installFields').classList.toggle('hidden',val('saleMethod')!=='installment')}
+function commitSale(id){let price=num('salePrice'),method=val('saleMethod'),down=method==='full'?price:num('saleDown'),periods=method==='full'?0:num('salePeriods'),periodAmount=method==='installment'?num('salePeriodAmount'):0;if(!(price>0))return error('成交价格需大于0');if(down<0||down>price)return error('首付不能小于0或大于成交价格');if(method==='installment'&&(!Number.isInteger(periods)||periods<1||periods>520))return error('期数请填1～520');if(periodAmount<0||periodAmount>0&&money(periodAmount*periods)<money(price-down))return error('每期金额设置不足以还清欠款');let date=val('saleDate'),first=method==='installment'?val('saleStart'):null;if(!date||(method==='installment'&&!first))return error('请填写日期');let c=db.cars.find(x=>x.id===id);c.status='sold';c.sale={price:money(price),method,date,down:money(down),periods,periodAmount:money(periodAmount),cycle:method==='installment'?val('saleCycle'):null,first,payments:down>0?[{date,amount:money(down),note:method==='full'?'一次性付款':'首付'}]:[]};save();closeModal();switchPage(method==='installment'?'payments':'stock')}
+function schedule(c){let s=c.sale;if(!s||s.method!=='installment')return[];let left=money(s.price-s.down),unit=s.periodAmount>0?s.periodAmount:money(left/s.periods),rows=[];for(let i=0;i<s.periods&&left>0;i++){let amount=money(Math.min(unit,left));rows.push({date:addPeriod(s.first,i,s.cycle),amount});left=money(left-amount)}return rows}
+function overdue(c){let received=Math.max(0,paid(c)-c.sale.down),expected=schedule(c).filter(x=>x.date<today()).reduce((n,x)=>n+x.amount,0);return money(Math.max(0,expected-received))}
+function installmentTable(c){return schedule(c).map((x,i)=>`<div class="listrow row"><span>第${i+1}期 <span class="muted tiny">${x.date}</span></span><b>${fmt(x.amount)}</b></div>`).join('')}
+const baseRender=render;
+render=function(){baseRender();let sold=db.cars.filter(c=>c.status==='sold'),ongoing=sold.filter(c=>c.sale?.method==='installment'),outstanding=money(sold.reduce((s,c)=>s+due(c),0));$('statDue').textContent=fmt(outstanding);$('dueTotal').textContent=fmt(outstanding);$('overdueTotal').textContent=fmt(ongoing.reduce((s,c)=>s+overdue(c),0));document.querySelectorAll('#carList .item').forEach((el,i)=>{let q=$('searchCar').value.toLowerCase(),cars=db.cars.filter(c=>(filter==='all'||c.status===filter)&&(c.model+c.vin).toLowerCase().includes(q)),c=cars[i];if(c&&!el.querySelector('.edit-car')){let b=document.createElement('button');b.className='btn ghost edit-car';b.textContent='修改车辆';b.onclick=()=>showEdit(c.id);el.appendChild(b)}});let lf=$('ledgerFrom').value,lt=$('ledgerTo').value,ledger=db.ledger.filter(x=>(!lf||x.date>=lf)&&(!lt||x.date<=lt));$('ledgerIn').textContent=fmt(ledger.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0));$('ledgerOut').textContent=fmt(ledger.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0));$('ledgerList').innerHTML=ledger.map(x=>`<div class="listrow row"><div><b>${esc(x.note)}</b><div class="tiny muted">${esc(x.date)}</div></div><b class="${x.type==='income'?'success':'warn'}">${x.type==='income'?'+':'-'}${fmt(x.amount)}</b></div>`).join('')||'<div class="empty">该日期范围暂无记录</div>'}
+render();
+</script>
+</body>
+</html>
+
