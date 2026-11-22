@@ -182,7 +182,24 @@
 <script>
 const seed=()=>({cars:[{id:'c1',model:'电动车 A款',vin:'DEMO-A00001',buy:3800,category:'new',status:'stock',date:'2026-11-21'},{id:'c2',model:'电动车 B款',vin:'DEMO-B00002',buy:4700,category:'new',status:'stock',date:'2026-11-21'},{id:'c3',model:'电动车 A款',vin:'DEMO-A00003',buy:3800,category:'used',status:'sold',date:'2026-11-20',sale:{price:5600,method:'installment',date:'2026-11-20',down:1600,periods:4,cycle:'month',payments:[{date:'2026-11-20',amount:1600,note:'首付'}]}}],ledger:[{id:'l1',type:'expense',amount:120,date:'2026-11-21',note:'店铺杂费（示例）'}]});
 let db;try{db=JSON.parse(localStorage.getItem('carDemoV1'))||seed()}catch{db=seed()};let filter='all';const $=id=>document.getElementById(id), fmt=n=>'¥'+Number(n||0).toLocaleString('zh-CN',{maximumFractionDigits:2}), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])), today=()=>new Date().toLocaleDateString('sv-SE');const money=n=>Math.round(Number(n||0)*100)/100;
-function save(){try{localStorage.setItem('carDemoV1',JSON.stringify(db))}catch(e){alert('此浏览器无法保存演示数据，请勿用于真实业务。')}render()};function switchPage(p){['home','stock','payments','ledger','more'].forEach(x=>$('page-'+x).classList.toggle('hidden',x!==p));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.page===p));window.scrollTo(0,0);render()};function setFilter(f){filter=f;render()};function openModal(t,html){$('modalTitle').textContent=t;$('modalBody').innerHTML=html;$('modal').classList.remove('hidden')};function closeModal(){$('modal').classList.add('hidden')};function field(id,label,type='text',value='',extra=''){return `<div class="field">
+function save(){try{localStorage.setItem('carDemoV1',JSON.stringify(db))}catch(e){alert('此浏览器无法保存演示数据，请勿用于真实业务。')}render()};function switchPage(p){['home','stock','payments','ledger','more'].forEach(x=>$('page-'+x).classList.toggle('hidden',x!==p));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.page===p));window.scrollTo(0,0);render()};function setFilter(f){filter=f;render()};
+let collapsedCats={new:false,used:false};
+function toggleCat(cat){collapsedCats[cat]=!collapsedCats[cat];render()}
+function vcardHtml(c){return `<div class="vcard" role="button" tabindex="0" onclick="openCarDetail('${c.id}')" onkeydown="if(event.key==='Enter')openCarDetail('${c.id}')"><div class="vcard-top"><b title="${esc(c.model)}">${esc(c.model)}</b><span class="pill ${c.status==='sold'?'sold':''}">${c.status==='sold'?'已售':'在库'}</span></div><div class="mono">${esc(c.vin)}</div></div>`}
+function catBlock(cat,label,items,searching){const collapsed=!searching&&collapsedCats[cat];return `<div class="cat-col${collapsed?' collapsed':''}" data-cat="${cat}"><button class="cat-head" type="button" onclick="toggleCat('${cat}')"><span class="cat-name">${label}</span><span class="cat-count">${items.length}</span><span class="chev">▾</span></button><div class="cat-body">${items.length?items.map(vcardHtml).join(''):'<div class="empty" style="padding:14px 6px">暂无</div>'}</div></div>`}
+function renderCarList(list){
+  const q=($('searchCar')?$('searchCar').value:'').toLowerCase();
+  const searching=!!q;
+  const pending=list.filter(c=>(c.category||'pending')==='pending');
+  const news=list.filter(c=>c.category==='new');
+  const useds=list.filter(c=>c.category==='used');
+  if(!list.length){$('carList').innerHTML='<div class="empty">未找到相关车辆</div>';return}
+  let html='';
+  if(pending.length)html+=`<div class="pending-section"><h3 class="cat-title">待分类 · ${pending.length}</h3><div class="pending-grid">${pending.map(vcardHtml).join('')}</div></div>`;
+  html+='<div class="cat-grid">'+catBlock('new','新车',news,searching)+catBlock('used','旧车',useds,searching)+'</div>';
+  $('carList').innerHTML=html;
+}
+function openModal(t,html){$('modalTitle').textContent=t;$('modalBody').innerHTML=html;$('modal').classList.remove('hidden')};function closeModal(){$('modal').classList.add('hidden')};function field(id,label,type='text',value='',extra=''){return `<div class="field">
 <label>${label}</label>
 <input id="${id}" type="${type}" value="${esc(value)}" ${extra}>
 </div>`};function selectField(id,label,options){return `<div class="field">
@@ -219,14 +236,7 @@ function showPay(id){let c=db.cars.find(x=>x.id===id),s=c.sale;openModal('分期
 <b>${fmt(p.amount)}</b>
 </div>`).join('')||'<p class="muted">暂无收款</p>'}`)};function commitPay(id){let c=db.cars.find(x=>x.id===id),amt=num('payAmount'),date=val('payDate');if(!(amt>0)||amt>due(c))return error('收款金额需大于0，且不能超过未收余额');if(!date)return error('请填写收款日期');c.sale.payments.push({date,amount:money(amt),note:'分期收款'});save();showPay(id)}
 function showLedger(){openModal('新增收支记录',selectField('lType','类型',[['income','收入'],['expense','支出']])+field('lAmount','金额（元）','number','','min="0" step="0.01"')+field('lNote','备注（例如租金、进货款等）')+field('lDate','日期','date',today())+'<button class="btn wide" id="ledgerSubmitBtn" onclick="commitLedger()">保存记录</button>')};function commitLedger(){let amount=num('lAmount'),note=val('lNote'),date=val('lDate');if(!(amount>0)||!note||!date)return error('请完整填写金额、备注和日期');db.ledger.unshift({id:crypto.randomUUID(),type:val('lType'),amount:money(amount),note,date});save();closeModal()};function resetDemo(){if(confirm('确定恢复最初模拟数据？本浏览器的演示操作将被清空。')){db=seed();save();switchPage('home')}}
-function render(){let sold=db.cars.filter(c=>c.status==='sold'),ongoing=sold.filter(c=>c.sale?.method==='installment');$('statStock').textContent=db.cars.length-sold.length;$('statSold').textContent=sold.length;let outstanding=money(ongoing.reduce((s,c)=>s+due(c),0));$('statDue').textContent=fmt(outstanding);$('salesTotal').textContent=fmt(sold.reduce((s,c)=>s+c.sale.price,0));$('paidTotal').textContent=fmt(sold.reduce((s,c)=>s+paid(c),0));$('dueTotal').textContent=fmt(outstanding);let q=$('searchCar').value.toLowerCase();let list=db.cars.filter(c=>(filter==='all'||c.status===filter)&&(c.model+c.vin).toLowerCase().includes(q));const catLabel=c=>({new:'新车',used:'旧车',pending:'待分类'}[c.category]||'待分类');const cardHtml=c=>`<div class="item">
-<div class="itemhead">
-<b>${esc(c.model)}</b>
-<span class="pill cat">${catLabel(c)}</span>
-<span class="pill ${c.status==='sold'?'sold':''}">${c.status==='sold'?'已售':'在库'}</span>
-</div>
-<div class="mono">车架号：${esc(c.vin)}</div><div class="photo-box" data-pid="${c.id}">${c.photo?`<div class="photo-ph" data-loading>图片加载中…</div>`:`<div class="photo-ph"><span>📷</span>暂无车辆图片</div>`}</div>
-<p class="muted tiny">入库：${esc(c.date)}${c.status==='sold'?' · 售价：'+fmt(c.sale.price):''}</p>${c.status==='stock'?`<button class="btn wide" onclick="showSale('${c.id}')">选择此车 · 登记售出</button>`:`<span class="chip">${c.sale.method==='full'?'一次性付款':'分期付款'}</span>`}</div>`;const groups=[['pending','待分类'],['new','新车'],['used','旧车']];$('carList').innerHTML=groups.map(([cat,label])=>{const items=list.filter(c=>(c.category||'pending')===cat);return `<h3 class="cat-title">${label} · ${items.length}</h3>`+(items.map(cardHtml).join('')||'<div class="empty">暂无</div>')}).join('');['all','stock','sold'].forEach(f=>{$('filter-'+f).className='btn '+(filter===f?'alt':'ghost')});$('paymentList').innerHTML=ongoing.map(c=>`<div class="item">
+function render(){let sold=db.cars.filter(c=>c.status==='sold'),ongoing=sold.filter(c=>c.sale?.method==='installment');$('statStock').textContent=db.cars.length-sold.length;$('statSold').textContent=sold.length;let outstanding=money(ongoing.reduce((s,c)=>s+due(c),0));$('statDue').textContent=fmt(outstanding);$('salesTotal').textContent=fmt(sold.reduce((s,c)=>s+c.sale.price,0));$('paidTotal').textContent=fmt(sold.reduce((s,c)=>s+paid(c),0));$('dueTotal').textContent=fmt(outstanding);let q=($('searchCar')?$('searchCar').value:'').toLowerCase();let list=db.cars.filter(c=>(filter==='all'||c.status===filter)&&(c.model+' '+c.vin).toLowerCase().includes(q));renderCarList(list);['all','stock','sold'].forEach(f=>{$('filter-'+f).className='btn '+(filter===f?'alt':'ghost')});$('paymentList').innerHTML=ongoing.map(c=>`<div class="item">
 <div class="itemhead">
 <b>${esc(c.model)}</b>
 <span class="pill ${due(c)?'due':''}">${due(c)?'待收款':'已结清'}</span>
@@ -262,7 +272,7 @@ function schedule(c){let s=c.sale;if(!s||s.method!=='installment')return[];let l
 function overdue(c){let received=Math.max(0,paid(c)-c.sale.down),expected=schedule(c).filter(x=>x.date<today()).reduce((n,x)=>n+x.amount,0);return money(Math.max(0,expected-received))}
 function installmentTable(c){return schedule(c).map((x,i)=>`<div class="listrow row"><span>第${i+1}期 <span class="muted tiny">${x.date}</span></span><b>${fmt(x.amount)}</b></div>`).join('')}
 const baseRender=render;
-render=function(){baseRender();let sold=db.cars.filter(c=>c.status==='sold'),ongoing=sold.filter(c=>c.sale?.method==='installment'),outstanding=money(sold.reduce((s,c)=>s+due(c),0));$('statDue').textContent=fmt(outstanding);$('dueTotal').textContent=fmt(outstanding);$('overdueTotal').textContent=fmt(ongoing.reduce((s,c)=>s+overdue(c),0));document.querySelectorAll('#carList .item').forEach((el,i)=>{let q=$('searchCar').value.toLowerCase(),cars=db.cars.filter(c=>(filter==='all'||c.status===filter)&&(c.model+c.vin).toLowerCase().includes(q)),c=cars[i];if(c&&!el.querySelector('.edit-car')){let row=document.createElement('div');row.className='card-actions';let main=el.querySelector('.btn.wide')||el.querySelector('.chip');if(main)row.appendChild(main);if(typeof liveToken!=='undefined'&&liveToken){let bc=document.createElement('button');bc.className='btn ghost';bc.textContent='拍照';bc.onclick=()=>pickCamera(c.id);let ba=document.createElement('button');ba.className='btn ghost';ba.textContent='相册';ba.onclick=()=>pickAlbum(c.id);row.appendChild(bc);row.appendChild(ba)}let b=document.createElement('button');b.className='btn ghost edit-car';b.textContent='修改车辆';b.onclick=()=>showEdit(c.id);row.appendChild(b);if(typeof canManage==='function'&&canManage()&&c.status==='stock'){let bd=document.createElement('button');bd.className='btn danger';bd.textContent='删除车辆';bd.onclick=()=>showDelete(c.id);row.appendChild(bd)}el.appendChild(row)}});$('trashCount').textContent=(db.trash||[]).length;let lf=$('ledgerFrom').value,lt=$('ledgerTo').value,ledger=db.ledger.filter(x=>(!lf||x.date>=lf)&&(!lt||x.date<=lt));$('ledgerIn').textContent=fmt(ledger.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0));$('ledgerOut').textContent=fmt(ledger.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0));$('ledgerList').innerHTML=ledger.map(x=>`<div class="listrow row"><div><b>${esc(x.note)}</b><div class="tiny muted">${esc(x.date)}</div></div><b class="${x.type==='income'?'success':'warn'}">${x.type==='income'?'+':'-'}${fmt(x.amount)}</b></div>`).join('')||'<div class="empty">该日期范围暂无记录</div>';if(typeof hydratePhotos==='function')hydratePhotos()};
+render=function(){baseRender();let sold=db.cars.filter(c=>c.status==='sold'),ongoing=sold.filter(c=>c.sale?.method==='installment'),outstanding=money(sold.reduce((s,c)=>s+due(c),0));$('statDue').textContent=fmt(outstanding);$('dueTotal').textContent=fmt(outstanding);$('overdueTotal').textContent=fmt(ongoing.reduce((s,c)=>s+overdue(c),0));/* 卡片操作按钮已移入 openCarDetail 详情弹窗 */$('trashCount').textContent=(db.trash||[]).length;let lf=$('ledgerFrom').value,lt=$('ledgerTo').value,ledger=db.ledger.filter(x=>(!lf||x.date>=lf)&&(!lt||x.date<=lt));$('ledgerIn').textContent=fmt(ledger.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0));$('ledgerOut').textContent=fmt(ledger.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0));$('ledgerList').innerHTML=ledger.map(x=>`<div class="listrow row"><div><b>${esc(x.note)}</b><div class="tiny muted">${esc(x.date)}</div></div><b class="${x.type==='income'?'success':'warn'}">${x.type==='income'?'+':'-'}${fmt(x.amount)}</b></div>`).join('')||'<div class="empty">该日期范围暂无记录</div>';if(typeof hydratePhotos==='function')hydratePhotos()};
 render();
 </script>
 <style>
@@ -272,8 +282,8 @@ render();
 <script>
 // 联机测试层：Quick Tunnel 地址仅供临时验收，演示模式仍使用 localStorage。
 const API_BASE=location.hostname.endsWith('github.io')?'https://contests-cheats-seek-elliott.trycloudflare.com':location.origin;
-const APP_VERSION='2.3.0';
-const APP_BUILD='20261122-1910';
+const APP_VERSION='2.4.0';
+const APP_BUILD='20261122-2009';
 const appVerEl=document.getElementById('appVer');if(appVerEl)appVerEl.textContent=APP_VERSION;
 const gateVerEl=document.getElementById('gateVer');if(gateVerEl)gateVerEl.textContent='车辆管家婆 · V'+APP_VERSION;
 function authRead(k){return localStorage.getItem(k)||sessionStorage.getItem(k)||''}
@@ -451,6 +461,18 @@ commitSale=function(id){if(!liveToken)return demoCommitSale(id);let price=num('s
 commitPay=function(id){if(!liveToken)return demoCommitPay(id);let amount=num('payAmount'),date=val('payDate');if(!(amount>0)||!date)return error('请填写正确的收款金额和日期');return liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/payments`,{amount,date,note:'分期收款'}),{btn:$('paySubmitBtn'),label:'正在保存…',success:'收款已登记',successCb:()=>showPay(id)})}
 commitLedger=function(){if(!liveToken)return demoCommitLedger();let amount=num('lAmount'),note=val('lNote'),date=val('lDate');if(!(amount>0)||!note||!date)return error('请完整填写金额、备注和日期');return liveWrite(()=>api('POST','/api/ledger',{type:val('lType'),amount,note,date}),{btn:$('ledgerSubmitBtn'),label:'正在保存…',success:'记账成功'})}
 function canManage(){return typeof liveToken!=='undefined'&&!!liveToken&&(liveRole==='admin'||liveRole==='owner')}
+function openCarDetail(id){
+  const c=db.cars.find(x=>x.id===id);if(!c)return;
+  const photo=`<div class="photo-box" data-pid="${c.id}">${c.photo?'<div class="photo-ph" data-loading>图片加载中…</div>':'<div class="photo-ph"><span>📷</span>暂无车辆图片</div>'}</div>`;
+  const info=`<div class="listrow"><span class="muted tiny">车架号</span><b>${esc(c.vin)}</b></div><div class="listrow"><span class="muted tiny">入库日期</span><b>${esc(c.date)}</b></div>${c.buy?`<div class="listrow"><span class="muted tiny">进货成本</span><b>${fmt(c.buy)}</b></div>`:''}${c.status==='sold'?`<div class="listrow"><span class="muted tiny">售价</span><b>${fmt(c.sale.price)}</b></div><div class="listrow"><span class="muted tiny">付款方式</span><b>${c.sale.method==='full'?'一次性付款':'分期付款'}</b></div>`:''}`;
+  const acts=[];
+  if(c.status==='stock')acts.push(`<button class="btn wide" onclick="closeModal();showSale('${id}')">登记售出</button>`);
+  acts.push(`<button class="btn alt wide" onclick="showEdit('${id}')">修改车辆</button>`);
+  acts.push(`<div class="stack"><button class="btn ghost" onclick="pickCamera('${id}')">📷 拍照</button><button class="btn ghost" onclick="pickAlbum('${id}')">🖼️ 相册</button></div>`);
+  if(canManage()&&c.status==='stock')acts.push(`<button class="btn danger wide" onclick="showDelete('${id}')">删除车辆</button>`);
+  openModal(esc(c.model),photo+info+'<div class="stack" style="margin-top:12px">'+acts.join('')+'</div>');
+  if(typeof hydratePhotos==='function')hydratePhotos();
+}
 function showDelete(id){let c=db.cars.find(x=>x.id===id);if(!c)return;openModal('删除车辆',`<p>确定删除这台车辆吗？</p><div class="listrow"><b>${esc(c.model)}</b><div class="mono">车架号：${esc(c.vin)}</div></div><p class="tiny muted">删除后进入回收站，可由管理员/店主恢复；已售车辆或有销售、收款记录的车辆不能删除。</p><div class="two"><button class="btn ghost" onclick="closeModal()">取消</button><button class="btn danger" onclick="confirmDelete('${id}')">确认删除</button></div>`)}
 function confirmDelete(id){return liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/delete`,{}),{label:'正在删除…',success:'车辆已删除'})}
 function showTrash(){let list=db.trash||[];let body=list.length?list.map(t=>`<div class="listrow row"><div><b>${esc(t.model)}</b><div class="mono">车架号：${esc(t.vin)}</div><div class="tiny muted">删除时间：${esc(t.deletedAt||'-')} · 操作人：${esc(t.deletedBy||'-')}</div></div>${canManage()?`<button class="btn ghost" onclick="showRestore('${t.id}')">恢复</button>`:''}</div>`).join(''):'<div class="empty">回收站为空</div>';if(!canManage()&&list.length)body+='<p class="tiny muted">仅管理员/店主可恢复车辆</p>';openModal('回收站',body)}
@@ -488,6 +510,24 @@ html,body{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none
 .submit-status{min-height:22px;margin:2px 0 10px;font-size:13px;display:flex;align-items:center;gap:7px}
 .submit-status.err{color:#c74640}.submit-status.ok{color:#10a572}
 .submit-status .spin{border-color:rgba(25,38,62,.2);border-top-color:#315fe7}
+/* 库存双列与分类折叠 */
+.cat-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.cat-col{background:#fafbfe;border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.cat-head{display:flex;align-items:center;gap:6px;width:100%;padding:11px 12px;background:none;border:0;cursor:pointer;font-size:14px;font-weight:700;color:var(--ink);min-width:0}
+.cat-head .cat-count{margin-left:auto;font-size:11px;color:var(--muted);background:#eef2f9;border-radius:12px;padding:2px 8px;flex:none}
+.cat-head .chev{font-size:12px;color:var(--muted);transition:transform .2s ease;flex:none}
+.cat-col.collapsed .chev{transform:rotate(-90deg)}
+.cat-body{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}
+.cat-col.collapsed .cat-body{display:none}
+.vcard{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px;cursor:pointer;min-width:0}
+.vcard:active{background:#f3f6ff}
+.vcard-top{display:flex;justify-content:space-between;gap:6px;align-items:center}
+.vcard b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.vcard .mono{font-size:11px;color:#68748a;overflow-wrap:anywhere;margin-top:3px}
+.vcard .pill{flex:none}
+.pending-section{margin-bottom:12px}
+.pending-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+@media (max-width:360px){.cat-grid,.pending-grid{gap:8px}}
 </style>
 <script>
 function unlockApp(){document.body.classList.remove('auth-pending');document.body.classList.add('app-ready');$('sessionUser').textContent=liveUser}
