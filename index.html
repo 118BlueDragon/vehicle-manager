@@ -301,7 +301,7 @@ window.VM={get token(){return liveToken},get base(){return API_BASE},get role(){
 const note=document.querySelector('.note');
 note.insertAdjacentHTML('afterend',`<div class="modebar"><div class="row"><div><b id="modeTitle">演示模式</b><div class="tiny muted" id="modeDesc">数据只保存在当前浏览器</div></div><button class="btn alt" id="modeButton" onclick="openLiveLogin()">联机测试</button></div></div>`);
 function setBusy(on){document.body.classList.toggle('busy',on)}
-async function refreshData(){let b=$('refreshButton');b.disabled=true;b.querySelector('span').textContent='刷新中';try{await checkUpdateThenRefresh()}catch(e){vmToast(e.message,'error')}finally{b.disabled=false;b.querySelector('span').textContent='刷新'}}
+async function refreshData(){let b=$('refreshButton');btnBusy(b,'刷新中…');try{await checkUpdateThenRefresh()}catch(e){vmToast(e.message,'error')}finally{btnReset(b)}}
 async function originalRefresh(){if(liveToken)await loadLive();else{try{db=JSON.parse(localStorage.getItem('carDemoV1'))||seed()}catch{db=seed()}render()}}
 function parseVer(v){return String(v||'0.0.0').split('.').map(n=>parseInt(n,10)||0)}
 function verNewer(a,b){const A=parseVer(a),B=parseVer(b);for(let i=0;i<3;i++){if((A[i]||0)>(B[i]||0))return true;if((A[i]||0)<(B[i]||0))return false}return false}
@@ -505,7 +505,7 @@ body.modal-open{overflow:hidden;position:fixed;left:0;right:0;top:0;width:100%}
 .spin{width:17px;height:17px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:vm-spin .75s linear infinite;flex:none}
 @keyframes vm-spin{to{transform:rotate(360deg)}}
 .btn.is-busy{pointer-events:none;opacity:.75}
-.btn.alt .spin,.btn.ghost .spin,.btn.danger .spin{border-color:rgba(49,95,231,.25);border-top-color:#315fe7}
+.btn.alt .spin,.btn.ghost .spin,.btn.danger .spin{border-color:rgba(49,95,231,.25);border-top-color:#315fe7}.refresh-fab .spin{border-color:rgba(255,255,255,.35);border-top-color:#fff}
 .ok-check{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#10a572;color:#fff;font-size:12px;flex:none}
 #vmToast{position:fixed;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:60;display:none;align-items:center;gap:8px;background:rgba(25,38,62,.94);color:#fff;padding:11px 16px;border-radius:13px;font-size:14px;box-shadow:0 10px 30px rgba(11,23,48,.35);max-width:86vw}
 #vmToast.show{display:flex}
