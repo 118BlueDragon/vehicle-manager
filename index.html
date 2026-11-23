@@ -144,7 +144,7 @@ body.modal-open{overflow:hidden;position:fixed;left:0;right:0;top:0;width:100%}
 </div>
 </section>
 </main>
-<footer class="app-version">车辆管家婆 · V3.0.0</footer>
+<footer class="app-version">车辆管家婆 · V3.1.0</footer>
 </div>
 
 <nav class="tabs">
@@ -162,7 +162,7 @@ body.modal-open{overflow:hidden;position:fixed;left:0;right:0;top:0;width:100%}
 <div id="vmToast" role="status" aria-live="polite"></div>
 
 <script>
-const APP_VERSION='3.0.0';
+const APP_VERSION='3.1.0';
 const API_BASE=location.hostname.endsWith('github.io')?'https://valium-entertaining-rats-practitioners.trycloudflare.com':location.origin;
 const $=id=>document.getElementById(id);
 const fmt=n=>'¥'+Number(n||0).toLocaleString('zh-CN',{maximumFractionDigits:2});
@@ -277,12 +277,26 @@ function pickAddAlbum(btn){photoTarget='';photoBusyBtn=btn;$('photoAlbum').click
 $('photoCamera').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';handlePhoto(f)});
 $('photoAlbum').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';handlePhoto(f)});
 const photoUrls=new Map();
+async function fetchCarPhoto(pid,token){
+  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),20000);
+  try{
+    const r=await fetch(API_BASE+'/api/cars/'+encodeURIComponent(pid)+'/photo',{headers:{Authorization:'Bearer '+token},signal:ctrl.signal});
+    if(r.status===401)return {unauth:true};
+    if(!r.ok)throw new Error('图片加载失败');
+    return {blob:await r.blob()};
+  }finally{clearTimeout(timer)}
+}
 async function loadCarPhoto(pid,box){
   if(!liveToken||!box)return;
-  try{const r=await fetch(API_BASE+'/api/cars/'+encodeURIComponent(pid)+'/photo',{headers:{Authorization:'Bearer '+liveToken}});if(!r.ok)throw new Error('图片加载失败');
-    const blob=await r.blob();const old=photoUrls.get(pid);if(old)URL.revokeObjectURL(old);const url=URL.createObjectURL(blob);photoUrls.set(pid,url);
-    box.innerHTML='<img class="car-photo" src="'+url+'" alt="车辆图片" onclick="window.open(this.src)">';}
-  catch(e){box.innerHTML='<div class="photo-ph"><span>⚠️</span>图片加载失败</div>'}
+  let res=null;
+  for(let attempt=0;attempt<2;attempt++){
+    try{res=await fetchCarPhoto(pid,liveToken);break}
+    catch(e){if(attempt===1){box.innerHTML='<div class="photo-ph"><span>⚠️</span>图片加载失败</div>';return}}
+  }
+  if(res&&res.unauth){authClear();liveToken='';liveUser='';liveRole='';lockApp();return}
+  if(!res){box.innerHTML='<div class="photo-ph"><span>⚠️</span>图片加载失败</div>';return}
+  const blob=res.blob;const old=photoUrls.get(pid);if(old)URL.revokeObjectURL(old);const url=URL.createObjectURL(blob);photoUrls.set(pid,url);
+  box.innerHTML='<img class="car-photo" src="'+url+'" alt="车辆图片" onclick="window.open(this.src)">';
 }
 function hydratePhotos(){document.querySelectorAll('.photo-box[data-pid]').forEach(box=>{if(box.querySelector('img'))return;if(!box.dataset.hasPhoto)return;loadCarPhoto(box.dataset.pid,box)})}
 
@@ -464,6 +478,25 @@ function commitCustomer(){
   liveWrite(()=>api('POST','/api/customers',{name,phone:val('cuPhone'),note:val('cuNote')}),{btn:$('cuSubmitBtn'),label:'正在保存…',success:'客户已建档'});
 }
 
+/* ---------- 已售车辆补录客户 ---------- */
+function showLinkCustomer(id){
+  const c=db.cars.find(x=>x.id===id);if(!c)return;
+  openModal('补充客户资料 · '+c.model,
+    '<p class="tiny muted">仅补充客户关联，不改动成交价、首付、分期计划与收款记录。</p>'+
+    customerSelectHtml('')+
+    '<div id="linkNewCustFields" class="hidden">'+field('lcName','客户姓名（必填）')+field('lcPhone','联系电话（选填）')+'</div>'+
+    '<button class="btn wide" id="linkCustBtn" onclick="commitLinkCustomer(\''+id+'\')">保存客户资料</button>');
+  $('saleCustomer').onchange=()=>{$('linkNewCustFields').classList.toggle('hidden',val('saleCustomer')!=='__new')};
+}
+function commitLinkCustomer(id){
+  let customerId=val('saleCustomer'),newCustomer=null;
+  if(customerId==='__new'){const name=val('lcName');if(!name)return err('请填写客户姓名');newCustomer={name,phone:val('lcPhone')};customerId=''}
+  else if(!customerId)return err('请选择客户或新建客户');
+  const body=customerId?{customer_id:customerId}:{new_customer:newCustomer};
+  liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/link-customer`,body),
+    {btn:$('linkCustBtn'),label:'正在保存…',success:'客户资料已补充',successCb:()=>openCarDetail(id)});
+}
+
 /* ---------- 车辆/销售详情 ---------- */
 function statusPill(st){
   const map={settled:['已结清',''],overdue:['逾期','over'],upcoming:['未到期','due'],open:['灵活/未约定','open']};
@@ -507,6 +540,9 @@ function openCarDetail(id){
     }
     acts.push(`<button class="btn wide" onclick="closeModal();showPay('${id}')">💳 登记收款</button>`);
     acts.push(`<button class="btn alt wide" onclick="showFollowUp('${id}')">📞 添加跟进</button>`);
+    if(canManage()&&!s.customerId){
+      acts.push(`<button class="btn alt wide" onclick="showLinkCustomer('${id}')">👤 补充客户资料</button>`);
+    }
     if(canManage()){
       const revocable=s.payments.filter(p=>!p.reversed);
       if(revocable.length)acts.push(`<button class="btn danger wide" onclick="showReverse('${revocable[0].id}','${id}')">↩ 冲正最近一笔收款</button>`);
@@ -563,7 +599,19 @@ async function openCustomerDetail(cid){
   if(detail.followUps.length){
     body+='<hr class="hr"><b>跟进历史</b>'+detail.followUps.map(f=>`<div class="listrow"><div class="row"><b class="tiny">${esc(f.date)}</b><span class="muted tiny">${f.nextDate?'下次 '+esc(f.nextDate):''}</span></div><div>${f.statusLabel?`<span class="chip">${esc(f.statusLabel)}</span> `:''}${esc(f.situation||'')}</div>${f.promised>0?`<div class="tiny muted">承诺 ${fmt(f.promised)}${f.promisedDate?' · '+esc(f.promisedDate):''}</div>`:''}${f.note?`<div class="tiny muted">备注：${esc(f.note)}</div>`:''}${f.operator?`<div class="tiny muted">操作人：${esc(f.operator)}</div>`:''}</div>`).join('');
   }
-  openModal(esc(cu.name),body);
+  let acts='';
+  if(canManage())acts='<div class="stack" style="margin-top:12px"><button class="btn alt wide" onclick="showCustomerEdit(\''+cu.id+'\')">✏️ 更正资料</button></div>';
+  openModal(esc(cu.name),body+acts);
+}
+function showCustomerEdit(cid){
+  const cu=db.customers.find(x=>x.id===cid);if(!cu)return;
+  openModal('更正客户资料',field('ceName','客户姓名（必填）','text',cu.name)+field('cePhone','联系电话（选填）','text',cu.phone||'')+
+    '<button class="btn wide" id="ceSubmitBtn" onclick="commitCustomerEdit(\''+cid+'\')">保存更正</button>');
+}
+function commitCustomerEdit(cid){
+  const name=val('ceName');if(!name)return err('请填写客户姓名');
+  liveWrite(()=>api('PATCH','/api/customers/'+encodeURIComponent(cid),{name,phone:val('cePhone')}),
+    {btn:$('ceSubmitBtn'),label:'正在保存…',success:'资料已更正',successCb:()=>openCustomerDetail(cid)});
 }
 
 /* ---------- 渲染 ---------- */
@@ -648,3 +696,4 @@ if(liveToken){loadLive().then(unlockApp).catch(e=>{vmToast(e.message||'数据加
 </script>
 </body>
 </html>
+
