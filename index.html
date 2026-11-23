@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#101c31">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; worker-src 'self' blob:; connect-src 'self' https://*.trycloudflare.com; frame-src 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; worker-src 'self' blob:; connect-src 'self' https://*.trycloudflare.com blob: data:; frame-src 'none'; base-uri 'none'">
 <title>车辆管家婆</title>
 <style>
 :root{--bg:#f5f7fb;--ink:#19263e;--muted:#7a8598;--blue:#315fe7;--line:#e8ebf1;--green:#10a572;--red:#c74640;--amber:#c27a20}
@@ -32,6 +32,17 @@ body.modal-open{overflow:hidden;position:fixed;left:0;right:0;top:0;width:100%}
 .vcard{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px;cursor:pointer;min-width:0}.vcard:active{background:#f3f6ff}.vcard-top{display:flex;justify-content:space-between;gap:6px;align-items:center}.vcard b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vcard .mono{font-size:11px;color:#68748a;overflow-wrap:anywhere;margin-top:3px}
 .pending-section{margin-bottom:12px}.pending-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 .photo-box{margin:8px 0 4px}.car-photo{width:100%;height:150px;object-fit:contain;background:#eef1f6;border-radius:10px;cursor:zoom-in}.photo-ph{height:110px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;color:#9aa6b8;background:#f0f3f8;border-radius:10px;font-size:13px}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 4px}
+.photo-thumb{position:relative;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#eef1f6;min-width:0}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block}
+.photo-thumb .car-photo{height:100%;object-fit:cover}
+.photo-ph.small{height:100%;min-height:64px;font-size:12px;gap:4px}
+.cover-tag{position:absolute;left:4px;top:4px;background:rgba(49,95,231,.92);color:#fff;font-size:10px;padding:2px 7px;border-radius:8px;z-index:2}
+.thumb-del{position:absolute;right:4px;top:4px;width:22px;height:22px;border:0;border-radius:50%;background:rgba(20,28,45,.72);color:#fff;font-size:12px;line-height:22px;padding:0;z-index:2}
+.thumb-add{aspect-ratio:4/3;border:1px dashed #c3cddd;border-radius:10px;background:#f6f8fc;color:#8a96ab;font-size:24px;display:flex;align-items:center;justify-content:center}
+.thumb-ops{position:absolute;right:4px;top:4px;display:flex;gap:4px;z-index:2}
+.thumb-op{width:24px;height:24px;border:0;border-radius:7px;background:rgba(20,28,45,.72);color:#fff;font-size:12px;line-height:1;padding:0}
+.thumb-op.danger{background:rgba(190,40,40,.85)}
 .spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:vm-spin .75s linear infinite;flex:none}@keyframes vm-spin{to{transform:rotate(360deg)}}
 .btn.alt .spin,.btn.ghost .spin,.btn.danger .spin{border-color:rgba(49,95,231,.25);border-top-color:#315fe7}
 .btn.is-busy{pointer-events:none;opacity:.8}
@@ -44,19 +55,55 @@ body.modal-open{overflow:hidden;position:fixed;left:0;right:0;top:0;width:100%}
 .status-chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px}.status-chip{border:1px solid #dce2eb;background:#f1f4f8;color:#52617b;border-radius:20px;padding:8px 12px;font-size:13px;cursor:pointer}.status-chip.active{background:#315fe7;border-color:#315fe7;color:#fff}
 .mini-link{border:0;background:none;color:var(--blue);font-size:13px;padding:0;cursor:pointer;margin:4px 0 10px;text-decoration:underline}
 .vin-row{display:flex;gap:8px;align-items:center}.vin-row input{flex:1;min-width:0;max-width:100%}.vin-scan-btn{flex:none;min-height:43px;padding:11px 12px}
-.scan-sheet{max-height:92vh}.scan-camwrap{position:relative;margin:6px 0 10px;border-radius:12px;overflow:hidden;background:#000}.scan-camwrap video{width:100%;height:230px;object-fit:cover;display:block}
-.scan-frame{position:absolute;left:50%;top:50%;width:72%;height:130px;transform:translate(-50%,-50%);border:2px solid #4ade9e;border-radius:14px;pointer-events:none;box-shadow:0 0 0 2000px rgba(0,0,0,.28)}
-.scan-status{padding:9px 2px;color:var(--muted)}.scan-cand{font:12px ui-monospace,monospace;background:#f1f4f9;border:1px solid var(--line);border-radius:8px;padding:7px 10px;cursor:pointer}
+.scan-sheet{max-height:92vh}.scan-camwrap{position:relative;width:90%;height:68px;margin:6px auto 10px;border-radius:10px;overflow:hidden;background:#000}
+.scan-camwrap video{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:block;object-fit:cover}
+.scan-hint{padding:2px 2px 0;color:var(--ink);font-size:14px;text-align:center}
+.scan-status{padding:7px 2px;color:var(--muted)}.scan-cand{font:12px ui-monospace,monospace;background:#f1f4f9;border:1px solid var(--line);border-radius:8px;padding:7px 10px;cursor:pointer}
 .scan-ph{height:150px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;color:#9aa6b8;background:#f0f3f8;border-radius:10px;font-size:13px}
+/* ---------- 照片灯箱 ---------- */
+.lb{position:fixed;inset:0;z-index:40;background:rgba(6,10,20,.96);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.lb.hidden{display:none}
+.lb-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;touch-action:none;overflow:hidden}
+#lbImg{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center center;will-change:transform;user-select:none;-webkit-user-drag:none}
+.lb-close{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;z-index:42;width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;font-size:22px;line-height:1;display:grid;place-items:center;cursor:pointer}
+.lb-counter{position:absolute;bottom:calc(16px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:42;color:#fff;font-size:14px;background:rgba(255,255,255,.14);padding:5px 12px;border-radius:16px}
+
+/* ---------- 照片添加底部菜单 ---------- */
+.sheet-mask{position:fixed;inset:0;z-index:46;background:rgba(8,12,22,.46);display:flex;align-items:flex-end;justify-content:center}
+.sheet-mask.hidden{display:none}
+.sheet-panel{width:100%;max-width:520px;background:#fff;border-radius:18px 18px 0 0;padding:10px 12px calc(12px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+.sheet-title{text-align:center;color:#8a96ab;font-size:13px;padding:8px 0 4px}
+.sheet-item{border:0;border-radius:12px;background:#f1f4fa;padding:15px 14px;font-size:16px;color:#1f2d44;cursor:pointer;text-align:center}
+.sheet-item:active{background:#e3e9f4}
+.sheet-item.cancel{background:#fff;color:#6b7789;border:1px solid #e2e8f1}
+.pick-panel{max-height:82vh;overflow-y:auto}
+.pick-meta{text-align:center;color:var(--muted);font-size:12px;padding:2px 0}
+.pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.pick-item{position:relative;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#eef1f6;cursor:pointer}
+.pick-item img{width:100%;height:100%;object-fit:cover;display:block}
+.pick-item.is-on{outline:2px solid var(--blue)}
+.pick-badge{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:13px;line-height:22px;text-align:center;z-index:2}
+.pick-plus{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.88);color:#52617b;font-size:15px;line-height:22px;text-align:center;z-index:2}
+.photo-add-big{width:100%;height:130px;border:1.5px dashed #b9c6dc;border-radius:12px;background:#f6f8fc;color:#5b6b85;font-size:15px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;cursor:pointer}
+.photo-add-big .plus{font-size:30px;line-height:1;color:#315fe7}
+.thumb-add{cursor:pointer}
+.photo-limit{aspect-ratio:4/3;border-radius:10px;background:#f2f4f8;color:#a7b2c4;font-size:11px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px}
+.upload-bar{position:fixed;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:48;background:rgba(20,30,50,.94);color:#fff;border-radius:14px;padding:12px 16px;min-width:230px;max-width:86vw;box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.upload-bar.hidden{display:none}
+.ub-stage{font-size:14px;font-weight:600;margin-bottom:6px}
+.ub-pct{height:6px;border-radius:6px;background:rgba(255,255,255,.18);overflow:hidden;margin-bottom:6px}
+.ub-pct::before{content:'';display:block;height:100%;width:0;background:#4f86ff;border-radius:6px;transition:width .2s ease}
+.ub-pct.fill::before{width:var(--pct,0%)}
+.ub-eta{font-size:12px;color:#c7d2e6}
 </style>
 </head>
 <body class="auth-pending">
-<div id="loginGate" class="login-gate"><div class="login-card"><div class="login-logo">车</div><h1>车辆管家婆</h1><p>门店车辆销售管理</p><form onsubmit="event.preventDefault();gateLogin()"><label>账号</label><input id="gateUser" autocomplete="username" placeholder="请输入账号"><label>密码</label><input id="gatePass" type="password" autocomplete="current-password" placeholder="请输入密码"><label class="remember-row"><input type="checkbox" id="gateRemember" checked> 记住我，30天内免登录</label><button id="gateSubmit" type="submit">登录</button><div id="gateError" role="alert"></div></form><small>请使用门店分配的账号登录</small></div></div>
+<div id="loginGate" class="login-gate"><div class="login-card"><div class="login-logo">车</div><h1>车辆管家婆<span class="envtag" id="envTagLogin" hidden></span></h1><p>门店车辆销售管理</p><form onsubmit="event.preventDefault();gateLogin()"><label>账号</label><input id="gateUser" autocomplete="username" placeholder="请输入账号"><label>密码</label><input id="gatePass" type="password" autocomplete="current-password" placeholder="请输入密码"><label class="remember-row"><input type="checkbox" id="gateRemember" checked> 记住我，30天内免登录</label><button id="gateSubmit" type="submit">登录</button><div id="gateError" role="alert"></div></form><small>请使用门店分配的账号登录</small></div></div>
 
 <div class="shell">
 <header class="hero">
 <small>门店车辆销售管理</small>
-<h1>车辆管家婆</h1>
+<h1>车辆管家婆<span class="envtag" id="envTag" hidden></span></h1>
 <div class="sessionbar"><span id="sessionUser"></span><button onclick="logoutLive(true)">退出登录</button></div>
 <div class="stats">
 <div class="stat"><strong id="statStock">0</strong><span>在库车辆</span></div>
@@ -144,7 +191,7 @@ body.modal-open{overflow:hidden;position:fixed;left:0;right:0;top:0;width:100%}
 </div>
 </section>
 </main>
-<footer class="app-version">车辆管家婆 · V3.1.1</footer>
+<footer class="app-version">车辆管家婆 · V3.2.0</footer>
 </div>
 
 <nav class="tabs">
@@ -156,15 +203,70 @@ body.modal-open{overflow:hidden;position:fixed;left:0;right:0;top:0;width:100%}
 </nav>
 
 <input type="file" id="photoCamera" accept="image/jpeg,image/png,image/webp" capture="environment" class="hidden">
-<input type="file" id="photoAlbum" accept="image/jpeg,image/png,image/webp" class="hidden">
+<input type="file" id="photoAlbum" accept="image/jpeg,image/png,image/webp" multiple class="hidden">
 
 <div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()"><div class="sheet"><div class="row"><h2 id="modalTitle"></h2><button class="btn ghost" onclick="closeModal()">关闭</button></div><div id="modalBody"></div></div></div>
+<div id="lightbox" class="lb hidden" aria-hidden="true">
+<div class="lb-stage" id="lbStage"><img id="lbImg" alt="车辆照片"></div>
+<button class="lb-close" id="lbClose" aria-label="关闭">✕</button>
+<div class="lb-counter" id="lbCounter"></div>
+</div>
+
+<div id="photoSheet" class="sheet-mask hidden" onclick="if(event.target===this)closePhotoSheet()">
+<div class="sheet-panel">
+<div class="sheet-title">添加车辆照片</div>
+<button type="button" class="sheet-item" id="sheetCamera">📷 拍照</button>
+<button type="button" class="sheet-item" id="sheetAlbum">🖼️ 从相册选择</button>
+<button type="button" class="sheet-item cancel" id="sheetCancel">取消</button>
+</div>
+</div>
+
+<div id="pickSheet" class="sheet-mask hidden" onclick="if(event.target===this)closePickSheet()">
+<div class="sheet-panel pick-panel">
+<div class="sheet-title">确认选择照片</div>
+<div class="pick-meta" id="pickMeta"></div>
+<div id="pickGrid" class="pick-grid"></div>
+<div class="stack" style="margin-top:10px">
+<button type="button" class="btn ghost wide" onclick="closePickSheet()">取消（本次不加入）</button>
+<button type="button" class="btn wide" id="pickConfirm" onclick="confirmPicks()">确认添加</button>
+</div>
+</div>
+</div>
+<div id="uploadBar" class="upload-bar hidden">
+  <div id="ubStage" class="ub-stage">正在上传…</div>
+  <div id="ubPct" class="ub-pct"></div>
+  <div id="ubEta" class="ub-eta"></div>
+</div>
+<div id="scanOverlay" class="modal hidden" onclick="if(event.target===this)closeScan()"><div class="sheet scan-sheet">
+<div class="row"><h2>扫描车架号</h2><button class="btn ghost" onclick="closeScan()">关闭</button></div>
+<div id="scanCamWrap" class="scan-camwrap"><video id="scanVideo" playsinline muted></video></div>
+<div class="scan-hint">请将完整车架号对准上方横条</div>
+<div id="scanStatus" class="scan-status">对准车架上的字母和数字；也可从相册选图做文字识别。</div>
+<div class="stack" style="margin:6px 0 12px">
+<button type="button" class="btn alt" id="scanCaptureBtn" onclick="captureFrame()">📸 拍照识别</button>
+<button type="button" class="btn ghost" id="scanOcrBtn" onclick="pickScanImage(this,true)">🔤 相册文字识别</button>
+<button type="button" class="btn ghost" id="scanAlbumBtn" onclick="pickScanImage(this,false)">🖼️ 相册选图（码制）</button>
+</div>
+<input type="file" id="scanFile" accept="image/jpeg,image/png,image/webp" class="hidden">
+<div id="scanResult" class="hidden">
+<label class="tiny muted">识别结果（可手动修改后再填入）</label>
+<input id="scanVinInput" autocomplete="off" spellcheck="false" style="width:100%;font:15px ui-monospace,monospace;padding:11px 12px;border:1px solid #dce2eb;border-radius:10px;outline:none">
+<div id="scanCands" class="stack" style="margin-top:8px"></div>
+<div class="two" style="margin-top:12px">
+<button class="btn ghost" onclick="closeScan()">取消</button>
+<button class="btn" id="scanApplyBtn" onclick="applyScanVin()">填入车架号</button>
+</div>
+</div>
+<p class="tiny muted" style="margin-top:10px">识别仅在本机完成，不上传服务器；结果需你核对确认后才填入，不会自动入库。易混字符（0/O、1/I、5/S、8/B）请人工辨认，系统不会擅自改号。</p>
+</div></div>
 <div id="vmToast" role="status" aria-live="polite"></div>
 
 <script>
-const APP_VERSION='3.1.1';
+const APP_VERSION='3.2.0';
+const ENV_TAG='';
 const API_BASE=location.hostname.endsWith('github.io')?'https://valium-entertaining-rats-practitioners.trycloudflare.com':location.origin;
 const $=id=>document.getElementById(id);
+if(ENV_TAG){[['envTag'],['envTagLogin']].forEach(([id])=>{const t=$(id);if(t){t.textContent=ENV_TAG;t.hidden=false}})}
 const fmt=n=>'¥'+Number(n||0).toLocaleString('zh-CN',{maximumFractionDigits:2});
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today=()=>new Date().toLocaleDateString('sv-SE');
@@ -177,7 +279,7 @@ let liveUser=localStorage.getItem('vehicle_v3_user')||sessionStorage.getItem('ve
 let liveRole=localStorage.getItem('vehicle_v3_role')||sessionStorage.getItem('vehicle_v3_role')||'';
 let filter='all', owedFilter='all';
 let collapsedCats={new:false,used:false};
-let photoTarget='', pendingPhoto=null, addDraft=null;
+let photoTarget='', pendingPhotos=[], addDraft=null;
 
 function authSave(token,user,role,remember){const s=remember?localStorage:sessionStorage,o=remember?sessionStorage:localStorage;s.setItem('vehicle_v3_token',token);s.setItem('vehicle_v3_user',user);s.setItem('vehicle_v3_role',role);o.removeItem('vehicle_v3_token');o.removeItem('vehicle_v3_user');o.removeItem('vehicle_v3_role');localStorage.setItem('vehicle_v3_remember',remember?'1':'')}
 function authClear(){['vehicle_v3_token','vehicle_v3_user','vehicle_v3_role'].forEach(k=>{localStorage.removeItem(k);sessionStorage.removeItem(k)})}
@@ -186,7 +288,7 @@ function canManage(){return !!liveToken&&(liveRole==='admin'||liveRole==='owner'
 async function api(method,path,body){
   const headers={'Content-Type':'application/json'};
   if(liveToken)headers.Authorization='Bearer '+liveToken;
-  const hasPhoto=!!(body&&typeof body==='object'&&body.photo);
+  const hasPhoto=!!(body&&typeof body==='object'&&(body.photo||(Array.isArray(body.photos)&&body.photos.length)));
   const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),hasPhoto?60000:25000);
   let res;
   try{res=await fetch(API_BASE+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body),signal:ctrl.signal})}
@@ -235,9 +337,9 @@ function toggleCat(cat){collapsedCats[cat]=!collapsedCats[cat];render()}
 
 let vmScrollY=0;
 function openModal(t,html){vmScrollY=window.scrollY;$('modalTitle').textContent=t;$('modalBody').innerHTML=html;$('modal').classList.remove('hidden');document.body.classList.add('modal-open')}
-function closeModal(){$('modal').classList.add('hidden');document.body.classList.remove('modal-open');window.scrollTo(0,vmScrollY);pendingPhoto=null}
+function closeModal(){$('modal').classList.add('hidden');document.body.classList.remove('modal-open');window.scrollTo(0,vmScrollY);pendingPhotos=[];photoTarget=''}
 function field(id,label,type='text',value='',extra=''){return `<div class="field"><label>${label}</label><input id="${id}" type="${type}" value="${esc(value)}" ${extra}></div>`}
-function vinField(id,label,value=''){return `<div class="field"><label>${label}</label><input id="${id}" value="${esc(value)}" autocomplete="off" spellcheck="false"></div>`}
+function vinField(id,label,value=''){return `<div class="field"><label>${label}</label><div class="vin-row"><input id="${id}" value="${esc(value)}" autocomplete="off" spellcheck="false"><button type="button" class="btn ghost vin-scan-btn" onclick="openScanVin('${id}',this)">📷 扫描车架号</button></div></div>`}
 function selectField(id,label,options,value){return `<div class="field"><label>${label}</label><select id="${id}">${options.map(([v,t])=>`<option value="${v}" ${String(v)===String(value)?'selected':''}>${t}</option>`).join('')}</select></div>`}
 function val(id){const e=$(id);return e?e.value.trim():''}
 function num(id){return Number(val(id))}
@@ -253,52 +355,497 @@ async function compressImage(file){
     let w=img.naturalWidth,h=img.naturalHeight;if(!w||!h)throw new Error('图片尺寸无效');
     const maxEdge=1280;if(Math.max(w,h)>maxEdge){const k=maxEdge/Math.max(w,h);w=Math.round(w*k);h=Math.round(h*k)}
     const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
-    let quality=0.85;let blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality));
-    while(blob.size>500*1024&&quality>0.5){quality-=0.1;blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality))}
+    let quality=0.82;let blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality));
+    while(blob.size>400*1024&&quality>0.55){quality-=0.08;blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality))}
     if(blob.size>1500*1024)throw new Error('压缩后图片仍超过 1.5MB，请换一张照片');
     return blob;}
   finally{URL.revokeObjectURL(url)}
 }
+const MAX_PHOTOS=6;
 let photoBusyBtn=null;
-async function handlePhoto(file){
-  if(!file){photoBusyBtn=null;return;}
-  btnBusy(photoBusyBtn,'处理中…');
-  try{const blob=await compressImage(file);const dataUrl=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=()=>rej(new Error('图片读取失败'));fr.readAsDataURL(blob)});
-    if(photoTarget){await api('POST',`/api/cars/${photoTarget}/photo`,{photo:dataUrl});await loadLive();vmToast('照片已更新','success')}
-    else{pendingPhoto=dataUrl;renderAddPreview()}
-  }catch(e){vmToast(e.message||'上传失败，请重试','error')}
-  finally{btnReset(photoBusyBtn);photoBusyBtn=null}
+let pickPicks=[], pickRoom=0;
+/* 上传进度与预计剩余：按已完成张数与真实耗时估算，样本不足显示“正在估算” */
+const upStat={total:0,done:0,t0:0};
+function upStart(total){
+  upStat.total=total;upStat.done=0;upStat.t0=performance.now();
+  const bar=$('uploadBar');if(bar)bar.classList.remove('hidden');
+  upRender(0);
 }
-function renderAddPreview(){const box=$('addPhotoPreview');if(!box)return;box.innerHTML=pendingPhoto?`<img class="car-photo" src="${pendingPhoto}" alt="预览">` :''}
-function pickCamera(id,btn){photoTarget=id;photoBusyBtn=btn;$('photoCamera').click()}
-function pickAlbum(id,btn){photoTarget=id;photoBusyBtn=btn;$('photoAlbum').click()}
-function pickAddCamera(btn){photoTarget='';photoBusyBtn=btn;$('photoCamera').click()}
-function pickAddAlbum(btn){photoTarget='';photoBusyBtn=btn;$('photoAlbum').click()}
-$('photoCamera').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';handlePhoto(f)});
-$('photoAlbum').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';handlePhoto(f)});
+function upRender(cur,label){
+  const bar=$('uploadBar');if(!bar)return;
+  const {total,done,t0}=upStat;
+  const pct=total?Math.round(done/total*100):0;
+  $('ubStage').textContent=label||(total?`正在上传第 ${Math.min(cur,total)}/${total} 张`:'正在上传…');
+  const p=$('ubPct');p.style.setProperty('--pct',pct+'%');p.classList.toggle('fill',pct>0);
+  let eta='正在估算';
+  if(done>=1&&total>done){
+    const avg=(performance.now()-t0)/1000/done;
+    eta=`预计剩余约 ${Math.max(1,Math.round(avg*(total-done)))} 秒`;
+  }else if(done>=total){eta='即将完成'}
+  $('ubEta').textContent=eta;
+}
+function upTick(){upStat.done++;upRender(upStat.done)}
+function upHide(){const bar=$('uploadBar');if(bar)bar.classList.add('hidden')}
+function dataUrlOf(blob){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=()=>rej(new Error('图片读取失败'));fr.readAsDataURL(blob)})}
+async function handlePhotoFiles(files){
+  const list=[...(files||[])].filter(Boolean);
+  if(!list)return;
+  btnBusy(photoBusyBtn,'处理中…');
+  try{
+    const cur=photoTarget?carPhotoList(db.cars.find(x=>x.id===photoTarget)||{}).length:pendingPhotos.length;
+    const room=Math.max(0,MAX_PHOTOS-cur);
+    if(room<=0){vmToast(photoTarget?`该车已满 ${MAX_PHOTOS} 张，不能再添加照片`:`已选满 ${MAX_PHOTOS} 张，不能再添加照片`,'error');return}
+    // 逐张压缩为 dataURL；压缩失败的剔除并提示，不静默丢弃
+    const items=[];
+    for(const f of list){
+      try{const blob=await compressImage(f);const dataUrl=await dataUrlOf(blob);items.push({key:uuid4(),dataUrl})}
+      catch(e){vmToast(e.message||'图片处理失败，已跳过','error')}
+    }
+    if(!items.length)return;
+    if(items.length<=room){await commitItems(items)}
+    else{pickPicks=items.map(it=>({...it,selected:false}));pickRoom=room;openPickSheet()}
+  }catch(e){vmToast(e.message||'上传失败，请重试','error')}
+  finally{btnReset(photoBusyBtn);photoBusyBtn=null;upHide()}
+}
+/* 确认后提交：草稿入待选区；已存车逐张追加，单张失败不影响已存照片 */
+async function commitItems(items){
+  if(photoTarget){
+    let ok=0,fail=0;
+    if(items.length)upStart(items.length);
+    for(let i=0;i<items.length;i++){
+      upRender(i+1);
+      try{await api('POST',`/api/cars/${photoTarget}/photos`,{photo:items[i].dataUrl});ok++}
+      catch(e){fail++;vmToast((e.message||`第 ${i+1} 张上传失败`)+'，已上传的照片已保留，可稍后补传','error')}
+      upTick();
+    }
+    upHide();
+    if(ok){await loadLive();openCarDetail(photoTarget);vmToast(fail?`${ok} 张成功，${fail} 张失败，可在详情补传`:'照片已添加','success')}
+  }else{
+    items.forEach(it=>pendingPhotos.push({key:it.key,dataUrl:it.dataUrl}));
+    renderAddPreview();
+  }
+}
+function openPickSheet(){renderPickGrid();$('pickSheet').classList.remove('hidden')}
+function closePickSheet(){$('pickSheet').classList.add('hidden');pickPicks=[];pickRoom=0}
+function pickSelected(){return pickPicks.filter(p=>p.selected)}
+function renderPickGrid(){
+  const sel=pickSelected().length;
+  $('pickMeta').textContent=`最多可添加 ${pickRoom} 张，当前已选 ${sel} 张`;
+  $('pickGrid').innerHTML=pickPicks.map(p=>`
+    <div class="pick-item${p.selected?' is-on':''}" data-key="${p.key}" onclick="togglePick('${p.key}')">
+      <img src="${p.dataUrl}" alt="照片">
+      ${p.selected?'<span class="pick-badge">✓</span>':'<span class="pick-plus">＋</span>'}
+    </div>`).join('');
+  const c=$('pickConfirm');c.disabled=sel===0;c.textContent=sel?`确认添加 ${sel} 张`:'确认添加';
+}
+function togglePick(key){
+  const p=pickPicks.find(x=>x.key===key);if(!p)return;
+  if(!p.selected){
+    if(pickSelected().length>=pickRoom){vmToast(`最多再添加 ${pickRoom} 张，请先取消其他已选照片`,'warn');return}
+    p.selected=true;
+  }else{p.selected=false}
+  renderPickGrid();
+}
+async function confirmPicks(){
+  const items=pickSelected().map(p=>({key:p.key,dataUrl:p.dataUrl}));
+  if(!items.length){vmToast('请至少选择 1 张照片','warn');return}
+  closePickSheet();
+  await commitItems(items);
+}
+function renderAddPreview(){
+  const box=$('addPhotoPreview');if(!box)return;
+  if(!pendingPhotos.length){box.innerHTML='';return}
+  box.innerHTML='<div class="photo-grid">'+pendingPhotos.map((p,i)=>`
+    <div class="photo-thumb${i===0?' is-cover':''}">
+      <img src="${p.dataUrl}" alt="预览" onclick="setPendingCover(${i})">
+      ${i===0?'<span class="cover-tag">封面</span>':''}
+      <button type="button" class="thumb-del" onclick="removePendingPhoto('${p.key}')" aria-label="删除照片">✕</button>
+    </div>`).join('')+
+    (pendingPhotos.length<MAX_PHOTOS?'<button type="button" class="thumb-add" onclick="openPhotoSheet(\'\')" aria-label="添加照片">＋</button>':'')+
+    '</div><div class="tiny muted" style="margin-top:6px">已选 '+pendingPhotos.length+'/'+MAX_PHOTOS+' 张，点图片设为封面</div>';
+}
+function removePendingPhoto(key){pendingPhotos=pendingPhotos.filter(p=>p.key!==key);renderAddPreview()}
+function setPendingCover(i){const[p]=pendingPhotos.splice(i,1);pendingPhotos.unshift(p);renderAddPreview()}
+let sheetTarget='';
+function openPhotoSheet(target){sheetTarget=target||'';$('photoSheet').classList.remove('hidden')}
+function closePhotoSheet(){$('photoSheet').classList.add('hidden');sheetTarget=''}
+function pickCamera(id){photoTarget=id||'';$('photoCamera').click()}
+function pickAlbum(id){photoTarget=id||'';$('photoAlbum').click()}
+$('sheetCamera').addEventListener('click',()=>{const t=sheetTarget;closePhotoSheet();photoTarget=t;$('photoCamera').click()});
+$('sheetAlbum').addEventListener('click',()=>{const t=sheetTarget;closePhotoSheet();photoTarget=t;$('photoAlbum').click()});
+$('sheetCancel').addEventListener('click',closePhotoSheet);
+$('photoCamera').addEventListener('change',e=>{const fs=[...e.target.files];e.target.value='';handlePhotoFiles(fs)});
+$('photoAlbum').addEventListener('change',e=>{const fs=[...e.target.files];e.target.value='';handlePhotoFiles(fs)});
 const photoUrls=new Map();
-async function fetchCarPhoto(pid,token){
+async function fetchCarPhoto(pid,token,fname){
   const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),20000);
   try{
-    const r=await fetch(API_BASE+'/api/cars/'+encodeURIComponent(pid)+'/photo',{headers:{Authorization:'Bearer '+token},signal:ctrl.signal});
+    let path='/api/cars/'+encodeURIComponent(pid)+'/photo'+(fname?'?name='+encodeURIComponent(fname):'');
+    const r=await fetch(API_BASE+path,{headers:{Authorization:'Bearer '+token},signal:ctrl.signal});
     if(r.status===401)return {unauth:true};
     if(!r.ok)throw new Error('图片加载失败');
     return {blob:await r.blob()};
   }finally{clearTimeout(timer)}
 }
-async function loadCarPhoto(pid,box){
+function setBoxImg(box,url,pid,fname){
+  let img=box.querySelector('img.car-photo');
+  if(img){img.src=url;return}
+  const ph=box.querySelector('.photo-ph');
+  img=document.createElement('img');
+  img.className='car-photo';img.src=url;img.alt='车辆图片';
+  img.onclick=()=>openCarLightbox(pid,fname);
+  if(ph)box.replaceChild(img,ph);else box.prepend(img);
+}
+function setBoxFail(box,msg){
+  let ph=box.querySelector('.photo-ph');
+  if(ph){ph.innerHTML='<span>⚠️</span>'+msg;return}
+  ph=document.createElement('div');ph.className='photo-ph small';
+  ph.innerHTML='<span>⚠️</span>'+msg;box.prepend(ph);
+}
+async function loadCarPhoto(pid,fname,box){
   if(!liveToken||!box)return;
   let res=null;
   for(let attempt=0;attempt<2;attempt++){
-    try{res=await fetchCarPhoto(pid,liveToken);break}
-    catch(e){if(attempt===1){box.innerHTML='<div class="photo-ph"><span>⚠️</span>图片加载失败</div>';return}}
+    try{res=await fetchCarPhoto(pid,liveToken,fname);break}
+    catch(e){if(attempt===1){setBoxFail(box,'加载失败');return}}
   }
   if(res&&res.unauth){authClear();liveToken='';liveUser='';liveRole='';lockApp();return}
-  if(!res){box.innerHTML='<div class="photo-ph"><span>⚠️</span>图片加载失败</div>';return}
-  const blob=res.blob;const old=photoUrls.get(pid);if(old)URL.revokeObjectURL(old);const url=URL.createObjectURL(blob);photoUrls.set(pid,url);
-  box.innerHTML='<img class="car-photo" src="'+url+'" alt="车辆图片" onclick="window.open(this.src)">';
+  if(!res){setBoxFail(box,'加载失败');return}
+  const key=pid+'::'+fname;const old=photoUrls.get(key);if(old)URL.revokeObjectURL(old);
+  const url=URL.createObjectURL(res.blob);photoUrls.set(key,url);
+  box.classList.add('loaded');
+  setBoxImg(box,url,pid,fname);
 }
-function hydratePhotos(){document.querySelectorAll('.photo-box[data-pid]').forEach(box=>{if(box.querySelector('img'))return;if(!box.dataset.hasPhoto)return;loadCarPhoto(box.dataset.pid,box)})}
+function carPhotoList(car){
+  if(!car)return [];
+  if(Array.isArray(car.photos)&&car.photos.length)return car.photos;
+  if(car.photo)return [{id:null,fname:car.photo}];
+  return [];
+}
+function carPhotoUrls(car){return carPhotoList(car).map(p=>photoUrls.get(car.id+'::'+p.fname)).filter(Boolean)}
+function openCarLightbox(pid,fname){
+  const car=db.cars.find(x=>x.id===pid);if(!car)return;
+  const urls=carPhotoUrls(car);if(!urls.length)return;
+  const idx=Math.max(0,carPhotoList(car).findIndex(p=>p.fname===fname));
+  openLightbox(urls,idx<urls.length?idx:0);
+}
+function hydratePhotos(){document.querySelectorAll('.photo-grid[data-pid]').forEach(grid=>{const pid=grid.dataset.pid;grid.querySelectorAll('.photo-thumb[data-fname]').forEach(box=>{if(box.querySelector('img'))return;loadCarPhoto(pid,box.dataset.fname,box)})})}
+async function setCoverPhoto(carId,pid){
+  if(!pid)return vmToast('请刷新后再设置封面','warn');
+  try{await api('PATCH',`/api/cars/${carId}/photos/${pid}`,{cover:true});await loadLive();openCarDetail(carId);vmToast('已设为封面','success')}
+  catch(e){vmToast(e.message||'操作失败，请重试','error')}
+}
+async function deletePhoto(carId,pid){
+  if(!pid)return vmToast('历史照片请刷新后再删除','warn');
+  if(!confirm('确定删除这张照片吗？删除后不可恢复。'))return;
+  try{await api('DELETE',`/api/cars/${carId}/photos/${pid}`);await loadLive();openCarDetail(carId);vmToast('照片已删除','success')}
+  catch(e){vmToast(e.message||'删除失败，请重试','error')}
+}
+
+/* ---------- 照片灯箱（原生手势：跟手滑动 / 双指缩放 / 拖动 / 单击关闭 / 双击放大） ---------- */
+const lb={urls:[],index:0,scale:1,tx:0,ty:0};
+const lbStage=$('lbStage'),lbImg=$('lbImg');
+let lbPointers=new Map();
+let lbMode='none';            // pan | pinch
+let lbMoved=false,lbPinchMoved=false,lbAnimating=false;
+let lbStartDist=0,lbStartScale=1;
+let lbStartX=0,lbStartY=0,lbStartTx=0,lbStartTy=0;
+let lbLastX=0,lbLastT=0,lbVelocity=0;
+let lbMidStartX=0,lbMidStartY=0,lbLastTap=0;
+function lbApply(){lbImg.style.transform=`translate(${lb.tx}px,${lb.ty}px) scale(${lb.scale})`}
+function lbReset(){lb.scale=1;lb.tx=0;lb.ty=0;lbImg.style.transition='';lbApply()}
+function lbRender(){
+  lbImg.src=lb.urls[lb.index]||'';
+  lbReset();
+  const multi=lb.urls.length>1;
+  $('lbCounter').textContent=multi?`${lb.index+1} / ${lb.urls.length}`:'';
+}
+function openLightbox(urls,index){
+  lb.urls=(urls||[]).filter(Boolean);
+  if(!lb.urls.length)return;
+  lb.index=Math.max(0,Math.min(index||0,lb.urls.length-1));
+  $('lightbox').classList.remove('hidden');
+  $('lightbox').setAttribute('aria-hidden','false');
+  lbRender();
+}
+function closeLightbox(){
+  $('lightbox').classList.add('hidden');
+  $('lightbox').setAttribute('aria-hidden','true');
+  lb.urls=[];lbPointers.clear();lbMode='none';lbPinchMoved=false;lbAnimating=false;
+}
+function lbDist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function lbMid(p){return {x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2}}
+function lbAnimate(x,done){
+  lbImg.style.transition='transform .22s cubic-bezier(.25,.6,.3,1)';
+  lb.tx=x;lbApply();
+  setTimeout(()=>{lbImg.style.transition='';done&&done()},220);
+}
+function lbGo(d){
+  if(lb.urls.length<2||lbAnimating)return;
+  const next=lb.index+d;
+  if(next<0||next>=lb.urls.length){lbAnimate(0);return} // 首尾张回弹
+  lbAnimating=true;
+  const w=lbStage.clientWidth||window.innerWidth;
+  lbAnimate(d>0?-w:w,()=>{lb.index=next;lbRender();lbAnimating=false});
+}
+lbStage.addEventListener('pointerdown',e=>{
+  if(lbAnimating)return;
+  try{lbStage.setPointerCapture(e.pointerId)}catch(_){}
+  lbPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  lbMoved=false;lbVelocity=0;
+  if(lbPointers.size===2){
+    const p=[...lbPointers.values()];
+    lbMode='pinch';lbPinchMoved=true;
+    lbStartDist=lbDist(p[0],p[1]);lbStartScale=lb.scale;
+    const m=lbMid(p);lbMidStartX=m.x;lbMidStartY=m.y;lbStartTx=lb.tx;lbStartTy=lb.ty;
+  }else{
+    lbMode='pan';
+    lbStartX=e.clientX;lbStartY=e.clientY;lbStartTx=lb.tx;lbStartTy=lb.ty;
+    lbLastX=e.clientX;lbLastT=e.timeStamp;
+  }
+});
+lbStage.addEventListener('pointermove',e=>{
+  if(!lbPointers.has(e.pointerId))return;
+  lbPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(lbMode==='pinch'&&lbPointers.size===2){
+    const p=[...lbPointers.values()];
+    const d=lbDist(p[0],p[1]);
+    if(lbStartDist>0)lb.scale=Math.min(4,Math.max(1,lbStartScale*d/lbStartDist));
+    const m=lbMid(p);
+    lb.tx=lbStartTx+(m.x-lbMidStartX);lb.ty=lbStartTy+(m.y-lbMidStartY);
+    lbApply();return;
+  }
+  if(lbMode!=='pan')return;
+  const dx=e.clientX-lbStartX,dy=e.clientY-lbStartY;
+  if(Math.abs(dx)>8||Math.abs(dy)>8)lbMoved=true;
+  const dt=e.timeStamp-lbLastT;
+  if(dt>0)lbVelocity=(e.clientX-lbLastX)/dt;
+  lbLastX=e.clientX;lbLastT=e.timeStamp;
+  if(lb.scale>1){lb.tx=lbStartTx+dx;lb.ty=lbStartTy+dy}
+  else{lb.tx=lbStartTx+dx;lb.ty=0}
+  lbApply();
+});
+function lbEnd(e){
+  if(!lbPointers.has(e.pointerId))return;
+  lbPointers.delete(e.pointerId);
+  if(lbPointers.size===1){ // 双指抬落一指：重置单指起点，避免跳变
+    const p=[...lbPointers.values()][0];
+    lbMode='pan';lbStartX=p.x;lbStartY=p.y;lbStartTx=lb.tx;lbStartTy=lb.ty;
+    lbLastX=p.x;lbLastT=e.timeStamp;lbVelocity=0;return;
+  }
+  if(lbPointers.size!==0)return;
+  if(lbMode==='pinch'||lbPinchMoved){ // 缩放手势不触发翻页
+    lbPinchMoved=false;lbMode='none';
+    if(lb.scale===1){lb.tx=0;lb.ty=0;lbApply()}
+    return;
+  }
+  if(!lbMoved){ // 单击 / 双击判定
+    const now=Date.now();
+    if(now-lbLastTap<300){
+      lb.scale=lb.scale>1?1:2;
+      if(lb.scale===1)lbReset();else lbApply();
+      lbLastTap=0;
+    }else{
+      lbLastTap=now;
+      setTimeout(()=>{if(lbLastTap&&Date.now()-lbLastTap>=280&&!$('lightbox').classList.contains('hidden'))closeLightbox()},280);
+    }
+    lbMode='none';return;
+  }
+  if(lb.scale>1){lbMode='none';return} // 放大后拖动结束，保持位置
+  const dx=e.clientX-lbStartX,w=lbStage.clientWidth||window.innerWidth;
+  const flick=Math.abs(lbVelocity)>0.35;
+  if(dx<-w*0.25||(flick&&lbVelocity<-0.2))lbGo(1);
+  else if(dx>w*0.25||(flick&&lbVelocity>0.2))lbGo(-1);
+  else lbAnimate(0);
+  lbMode='none';
+}
+lbStage.addEventListener('pointerup',lbEnd);
+lbStage.addEventListener('pointercancel',lbEnd);
+$('lbClose').addEventListener('click',closeLightbox);
+$('lightbox').addEventListener('click',e=>{if(e.target===$('lightbox'))closeLightbox()});
+document.addEventListener('keydown',e=>{
+  if($('lightbox').classList.contains('hidden'))return;
+  if(e.key==='Escape')closeLightbox();
+  else if(e.key==='ArrowLeft')lbGo(-1);
+  else if(e.key==='ArrowRight')lbGo(1);
+});
+
+/* ---------- 车架号扫描识别（本地开源：ZXing 码制 + Tesseract OCR，不上传第三方） ---------- */
+let scanTarget='', scanReader=null, scanStream=null, scanOcrWorker=null, scanFileUrl=null;
+function loadScript(src){return new Promise((res,rej)=>{const ex=document.querySelector('script[src="'+src+'"]');if(ex){if(ex.dataset.ready)return res();return ex.addEventListener('load',()=>res())}const s=document.createElement('script');s.src=src;s.onload=()=>{s.dataset.ready='1';res()};s.onerror=()=>rej(new Error('识别组件加载失败，请稍后重试'));document.head.appendChild(s)})}
+function scanStatus(msg){const e=$('scanStatus');if(e)e.textContent=msg}
+function loadImage(url){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('图片无法打开，可能已损坏'));i.src=url})}
+async function openScanVin(inputId,btn){
+  scanTarget=inputId;
+  $('scanResult').classList.add('hidden');$('scanCands').innerHTML='';
+  const prev=$(scanTarget);$('scanVinInput').value=prev?prev.value||'':'';
+  $('scanOverlay').classList.remove('hidden');
+  scanStatus('正在启动摄像头…');
+  try{await loadScript('/static/lib/zxing.min.js');await startScanCamera();}
+  catch(e){scanStatus('摄像头不可用或未授权：可从相册选图识别，或直接手动输入车架号。')}
+}
+/* 按 cover 计算视频尺寸并居中：等比放大填满横条，超出部分由 wrap 的 overflow:hidden 裁掉，不依赖实时流对 object-fit 的支持 */
+function fitScanVideo(){
+  const video=$('scanVideo'),wrap=$('scanCamWrap');if(!video||!wrap)return;
+  const vw=video.videoWidth,vh=video.videoHeight;
+  if(!vw||!vh)return;
+  const wr=wrap.clientWidth,hr=wrap.clientHeight;
+  const scale=Math.max(wr/vw,hr/vh);
+  video.style.width=Math.round(vw*scale)+'px';
+  video.style.height=Math.round(vh*scale)+'px';
+}
+async function startScanCamera(){
+  const video=$('scanVideo');
+  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){scanStatus('当前浏览器不支持实时摄像头，请用相册选图或手动输入。');return}
+  video.removeEventListener('loadedmetadata',fitScanVideo);
+  video.removeEventListener('playing',fitScanVideo);
+  window.removeEventListener('resize',fitScanVideo);
+  video.addEventListener('loadedmetadata',fitScanVideo);
+  video.addEventListener('playing',fitScanVideo);
+  window.addEventListener('resize',fitScanVideo);
+  scanReader=new ZXing.BrowserMultiFormatReader();
+  try{
+    const control=await scanReader.decodeFromVideoDevice(undefined,video,(res)=>{if(res&&res.getText())onCodeDecoded(res.getText())});
+    scanStream=control&&control.stream||null;
+    scanStatus('对准车架上的字母数字；有条码/二维码会自动解码，也可点「拍照识别」或相册文字识别。');
+  }catch(e){
+    scanReader=null;const name=(e&&e.name)||'';
+    if(/NotAllowed|Security|Permission|Denied/i.test(name))scanStatus('摄像头权限被拒绝：可在浏览器设置中允许摄像头，或用相册选图 / 手动输入。');
+    else scanStatus('未能打开摄像头：可从相册选图识别，或直接手动输入。');
+  }
+}
+function stopScanCamera(){
+  try{if(scanReader){scanReader.reset();scanReader=null}}catch(e){}
+  if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}
+  const video=$('scanVideo');if(video)video.srcObject=null;
+}
+function onCodeDecoded(text){stopScanCamera();renderScanResult(extractVinCandidates(text),text)}
+function pickScanImage(btn,useOcr){
+  const inp=$('scanFile');
+  inp.onchange=async()=>{
+    const f=inp.files[0];inp.value='';if(!f)return;
+    if(scanFileUrl)URL.revokeObjectURL(scanFileUrl);
+    scanFileUrl=URL.createObjectURL(f);
+    btnBusy(btn,useOcr?'识别中…':'解码中…');
+    try{if(useOcr)await ocrImage(scanFileUrl);else await decodeImageByCode(scanFileUrl);}
+    catch(e){vmToast(e.message||'识别失败，可重试或手动输入','error')}
+    finally{btnReset(btn)}
+  };
+  inp.click();
+}
+async function decodeImageByCode(url){
+  await loadScript('/static/lib/zxing.min.js');
+  const img=await loadImage(url);
+  const reader=new ZXing.BrowserMultiFormatReader();
+  try{const res=reader.decodeFromImageElement(img);if(res&&res.getText()){onCodeDecoded(res.getText());return}}catch(e){}
+  scanStatus('图中未识别到二维码 / 条形码；可改用「照片文字识别」或手动输入。');
+  throw new Error('未识别到码制内容');
+}
+async function ensureOcrWorker(){
+  if(scanOcrWorker)return scanOcrWorker;
+  await loadScript('/static/lib/tesseract.min.js');
+  const origin=location.origin;
+  scanOcrWorker=await Tesseract.createWorker({
+    workerPath:origin+'/static/lib/worker.min.js',
+    corePath:origin+'/static/ocr/',
+    langPath:origin+'/static/ocr/',
+    logger:()=>{}
+  });
+  await scanOcrWorker.loadLanguage(['eng']);
+  await scanOcrWorker.initialize('eng', 1);
+  await scanOcrWorker.setParameters({
+    tessedit_pageseg_mode: 11,
+    tessedit_char_whitelist: 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789'
+  });
+  return scanOcrWorker;
+}
+function prepOcrCanvas(src){
+  return new Promise(async (res,rej)=>{
+    try{
+      const iw=src.naturalWidth||src.width, ih=src.naturalHeight||src.height;
+      if(!iw||!ih)throw new Error('图片尺寸无效');
+      const scale=Math.max(1, Math.min(2, 2400/iw));
+      const w=Math.round(iw*scale), h=Math.round(ih*scale);
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      const x=c.getContext('2d',{willReadFrequently:true});
+      x.drawImage(src,0,0,w,h);
+      const d=x.getImageData(0,0,w,h);const p=d.data;
+      for(let i=0;i<p.length;i+=4){const g=0.299*p[i]+0.587*p[i+1]+0.114*p[i+2];p[i]=p[i+1]=p[i+2]=g;}
+      x.putImageData(d,0,0);res(c);
+    }catch(e){rej(e)}
+  });
+}
+async function recognizeCanvas(canvas){
+  scanStatus('正在本机识别文字（首次需加载识别组件）…');
+  const worker=await ensureOcrWorker();
+  const {data}=await worker.recognize(canvas);
+  const text=(data&&data.text)||'';
+  const cands=extractVinCandidates(text);
+  if(!text.trim()&&!cands.length){scanStatus('未识别到清晰文字，请换一张更清楚的照片或手动输入。');throw new Error('OCR 未识别到文字')}
+  renderScanResult(cands,text);
+}
+async function ocrImage(url){
+  const img=await loadImage(url);
+  const canvas=await prepOcrCanvas(img);
+  await recognizeCanvas(canvas);
+}
+function captureFrame(){
+  const video=$('scanVideo');const wrap=$('scanCamWrap');
+  if(!video||!video.srcObject){scanStatus('摄像头尚未打开，可先用相册选图识别。');return}
+  const vw=video.videoWidth||640, vh=video.videoHeight||360;
+  // video 为 object-fit:cover：等比放大填满横条、居中裁掉超出部分；裁剪区即整条横条可见画面
+  const wr=wrap.getBoundingClientRect();
+  const scale=Math.max(wr.width/vw, wr.height/vh);
+  const dispW=vw*scale, dispH=vh*scale;
+  let sx=Math.max(0,(dispW-wr.width)/2/scale);
+  let sy=Math.max(0,(dispH-wr.height)/2/scale);
+  let sw=Math.min(vw-sx, wr.width/scale);
+  let sh=Math.min(vh-sy, wr.height/scale);
+  sw=Math.max(1,sw);sh=Math.max(1,sh);
+  const clip=document.createElement('canvas');clip.width=Math.round(sw);clip.height=Math.round(sh);
+  clip.getContext('2d').drawImage(video,sx,sy,sw,sh,0,0,sw,sh);
+  clip.toBlob(async b=>{
+    if(!b){scanStatus('抓拍失败，请重试');return}
+    if(scanFileUrl)URL.revokeObjectURL(scanFileUrl);
+    scanFileUrl=URL.createObjectURL(b);
+    scanStatus('正在本机识别横条内画面…');
+    try{const canvas=await prepOcrCanvas(clip);await recognizeCanvas(canvas)}
+    catch(e){vmToast(e.message||'识别失败，可重试或手动输入','error')}
+  },'image/jpeg',0.92);
+}
+function extractVinCandidates(raw){
+  const out=[];
+  const push=v=>{v=String(v==null?'':v).trim().toUpperCase().replace(/\s+/g,'');if(v.length>=6&&v.length<=24&&/[A-Z0-9]/.test(v)&&!out.includes(v))out.push(v)};
+  if(!raw)return out;
+  const text=String(raw);
+  let obj=null;try{obj=JSON.parse(text)}catch(e){}
+  if(obj){(function walk(o){if(o==null)return;if(Array.isArray(o)){o.forEach(walk);return}if(typeof o==='object'){for(const k of Object.keys(o)){if(/vin|车架|识别代号/i.test(k)&&typeof o[k]==='string')push(o[k]);else walk(o[k])}}})(obj)}
+  const kv=/(车架号|车架|车辆识别代号|识别代号|VIN码|VIN)\s*[:=：]\s*["']?([A-Za-z0-9][A-Za-z0-9\-]{5,23})/gi;
+  let m;while((m=kv.exec(text)))push(m[2]);
+  (text.match(/\b[A-HJ-NPR-Z0-9]{8,17}\b/g)||[]).forEach(push);
+  if(!out.length)(text.match(/\b[A-Za-z0-9][A-Za-z0-9\-]{5,23}\b/g)||[]).forEach(push);
+  return out;
+}
+function renderScanResult(cands,rawText){
+  $('scanResult').classList.remove('hidden');
+  const input=$('scanVinInput');
+  input.value=cands[0]||'';
+  const box=$('scanCands');box.innerHTML='';
+  cands.slice(0,6).forEach(c=>{const b=document.createElement('button');b.type='button';b.className='scan-cand';b.textContent=c;b.onclick=()=>{input.value=c};box.appendChild(b)});
+  if(!cands[0]&&rawText)input.value=rawText.trim().slice(0,80);
+  scanStatus(cands.length?('识别到 '+cands.length+' 个候选，请核对后填入。'):'未提取到标准车架号，可在结果框手动修改。');
+}
+function applyScanVin(){
+  const v=$('scanVinInput').value.trim();
+  if(!v)return err('请先填写或识别车架号');
+  const t=$(scanTarget);if(t){t.value=v;t.dispatchEvent(new Event('input',{bubbles:true}))}
+  closeScan();vmToast('车架号已填入，请核对后再入库','success');
+}
+function closeScan(){
+  stopScanCamera();
+  if(scanFileUrl){URL.revokeObjectURL(scanFileUrl);scanFileUrl=null}
+  $('scanOverlay').classList.add('hidden');
+}
 
 /* ---------- 车辆入库 ---------- */
 function showAdd(){
@@ -306,9 +853,9 @@ function showAdd(){
     field('mModel','车型 / 商品名称')+vinField('mVin','车架号（每台车唯一）')+
     field('mBuy','进货成本（元，可不填）','number','','min="0" step="0.01"')+
     `<div class="field"><label>车辆类型（必选）</label><div class="row" style="gap:14px"><label style="display:flex;gap:6px;align-items:center"><input type="radio" name="mCategory" value="new">新车</label><label style="display:flex;gap:6px;align-items:center"><input type="radio" name="mCategory" value="used">旧车</label></div></div>`+
-    `<div class="field"><label>车辆照片（可选）</label><div class="stack"><button type="button" class="btn ghost" onclick="pickAddCamera(this)">📷 拍照</button><button type="button" class="btn ghost" onclick="pickAddAlbum(this)">🖼️ 相册</button></div><div id="addPhotoPreview" class="add-photo-preview"></div></div>`+
+    `<div class="field"><label>车辆照片（可选，最多 ${MAX_PHOTOS} 张）</label><button type="button" class="btn ghost wide" onclick="openPhotoSheet('')">＋ 添加照片</button><div id="addPhotoPreview" class="add-photo-preview"></div></div>`+
     '<button class="btn wide" id="addSubmitBtn" onclick="submitAddCar()">确认入库</button>');
-  pendingPhoto=null;addDraft=null;renderAddPreview();
+  photoTarget='';pendingPhotos=[];addDraft=null;renderAddPreview();
 }
 function catVal(){const r=document.querySelector('input[name="mCategory"]:checked');return r?r.value:''}
 async function reconcileByVin(vin){
@@ -323,14 +870,54 @@ async function submitAddCar(){
   const buy=num('mBuy');if(buy<0)return err('进货成本不能为负');
   addDraft={model,vin,buy,category};
   const btn=$('addSubmitBtn');
-  const hasPhoto=!!pendingPhoto;
-  vmSubmitting=true;btnBusy(btn,hasPhoto?'正在上传照片，网络较慢时请耐心等待，请勿重复点击…':'正在入库…');
+  const photos=pendingPhotos.map(p=>p.dataUrl);
+  vmSubmitting=true;
+  let cid=null;
   try{
-    const body={model,vin,buy,category,date:today()};if(pendingPhoto)body.photo=pendingPhoto;
-    await api('POST','/api/cars',body);
-    pendingPhoto=null;addDraft=null;closeModal();
+    // 第一步：先只提交车辆资料（body 极小），拿到车辆 ID；照片随后逐张上传
+    btnBusy(btn,'正在保存车辆资料…');
+    try{
+      const r=await api('POST','/api/cars',{model,vin,buy,category,date:today()});
+      cid=r.id;
+    }catch(e){
+      // 建车阶段网络异常：先按车架号查重，避免弱网重试造出重复车辆
+      if(!e.network)throw e;
+      const result=await reconcileByVin(vin);
+      if(result==='saved'){
+        try{await loadLive()}catch(_){}
+        const hit=db.cars.find(c=>String(c.vin||'').trim().toLowerCase()===String(vin).trim().toLowerCase());
+        if(hit)cid=hit.id;
+      }
+      if(!cid){
+        vmToast('结果未确认：网络异常，请刷新车辆列表核对，请勿重复提交。','warn');
+        btnReset(btn);return;
+      }
+    }
+    // 第二步：逐张追加照片；单张失败不影响已上传照片，进度明确可见
+    const exist=cid?carPhotoList(db.cars.find(x=>x.id===cid)||{}).length:0;
+    if(exist>0){
+      // 命中已有照片的老车：不重复追加，进详情由用户手动补传
+      pendingPhotos=[];addDraft=null;closeModal();
+      try{await loadLive()}catch(_){}
+      vmToast('该车辆已存在照片，如需补充请在详情页操作','warn');
+      openCarDetail(cid);btnReset(btn);return;
+    }
+    let ok=0,fail=0;
+    if(photos.length)upStart(photos.length);
+    for(let i=0;i<photos.length;i++){
+      upRender(i+1);
+      btnBusy(btn,`正在上传第 ${i+1}/${photos.length} 张…`);
+      try{await api('POST',`/api/cars/${cid}/photos`,{photo:photos[i]});ok++;}
+      catch(e){fail++;vmToast((e.message||`第 ${i+1} 张上传失败`)+'，已上传的照片已保留，可稍后补传','error');}
+      upTick();
+    }
+    upHide();
+    pendingPhotos=[];addDraft=null;closeModal();
     let refreshed=true;try{await loadLive()}catch(e){refreshed=false}
-    if(refreshed){vmToast('车辆入库成功','success');btnReset(btn)}else{vmToast('车辆已保存，数据刷新失败，请点刷新重试','warn');btnReset(btn)}
+    if(fail===0){vmToast(photos.length?`车辆入库成功，${ok} 张照片已上传`:'车辆入库成功','success')}
+    else{vmToast(`车辆已保存，${ok} 张成功，${fail} 张失败，可在车辆详情补传`,'warn')}
+    if(refreshed&&cid)openCarDetail(cid);
+    btnReset(btn);
   }catch(e){
     let msg=e.message||'入库失败，请重试';
     if(e.network&&addDraft){
@@ -339,7 +926,7 @@ async function submitAddCar(){
       else if(result==='unknown'){msg='结果未确认：网络异常，请稍后刷新列表核对，请勿重复提交。'}
       else{msg='未查询到该车架号，可检查信息后重新提交。'}
     }
-    vmToast(msg,e.network?'warn':'error');btnReset(btn);
+    vmToast(msg,e.network?'warn':'error');btnReset(btn);upHide();
   }finally{vmSubmitting=false}
 }
 
@@ -502,9 +1089,35 @@ function statusPill(st){
   const map={settled:['已结清',''],overdue:['逾期','over'],upcoming:['未到期','due'],open:['灵活/未约定','open']};
   const m=map[st]||[st,''];return `<span class="pill ${m[1]}">${m[0]}</span>`;
 }
+function detailPhotoHtml(c){
+  const list=carPhotoList(c);
+  const canAdd=canManage();
+  if(!list.length){
+    if(!canAdd)return '<div class="photo-ph"><span>📷</span>暂无车辆图片</div>';
+    return `<button type="button" class="photo-add-big" onclick="openPhotoSheet('${c.id}')"><span class="plus">＋</span>添加照片</button>`;
+  }
+  const editable=c.status==='stock';
+  const thumbs=list.map((p,i)=>{
+    const cover=i===0;
+    const ops=editable?`<div class="thumb-ops">
+        <button type="button" class="thumb-op" title="设为封面" onclick="setCoverPhoto('${c.id}','${p.id||''}')">⭐</button>
+        <button type="button" class="thumb-op danger" title="删除照片" onclick="deletePhoto('${c.id}','${p.id||''}')">✕</button>
+      </div>`:'';
+    return `<div class="photo-thumb${cover?' is-cover':''}" data-pid="${c.id}" data-fname="${esc(p.fname)}" data-photo-id="${p.id||''}">
+      <div class="photo-ph small">加载中…</div>${cover?'<span class="cover-tag">封面</span>':''}${ops}</div>`;
+  }).join('');
+  const room=MAX_PHOTOS-list.length;
+  let addCard='';
+  if(canAdd){
+    addCard=room>0
+      ?`<button type="button" class="thumb-add" onclick="openPhotoSheet('${c.id}')" aria-label="添加照片">＋</button>`
+      :`<div class="photo-limit">已达上限 ${MAX_PHOTOS} 张</div>`;
+  }
+  return `<div class="photo-grid" data-pid="${c.id}">${thumbs}${addCard}</div>`;
+}
 function openCarDetail(id){
   const c=db.cars.find(x=>x.id===id);if(!c)return;
-  const photo=`<div class="photo-box" data-pid="${c.id}"${c.photo?' data-has-photo="1"':''}>${c.photo?'<div class="photo-ph">图片加载中…</div>':'<div class="photo-ph"><span>📷</span>暂无车辆图片</div>'}</div>`;
+  const photo=detailPhotoHtml(c);
   let info=`<div class="listrow"><span class="muted tiny">车架号</span><b>${esc(c.vin)}</b></div><div class="listrow"><span class="muted tiny">入库日期</span><b>${esc(c.date)}</b></div>`;
   if(c.buy)info+=`<div class="listrow"><span class="muted tiny">进货成本</span><b>${fmt(c.buy)}</b></div>`;
   let body=photo+info;
@@ -512,7 +1125,6 @@ function openCarDetail(id){
   if(c.status==='stock'){
     acts.push(`<button class="btn wide" onclick="closeModal();showSale('${id}')">登记售出</button>`);
     acts.push(`<button class="btn alt wide" onclick="showEdit('${id}')">修改车辆</button>`);
-    acts.push(`<div class="stack"><button class="btn ghost" onclick="pickCamera('${id}',this)">📷 拍照</button><button class="btn ghost" onclick="pickAlbum('${id}',this)">🖼️ 相册</button></div>`);
     if(canManage())acts.push(`<button class="btn danger wide" onclick="showDelete('${id}')">删除车辆</button>`);
   }else if(c.sale){
     const s=c.sale;
