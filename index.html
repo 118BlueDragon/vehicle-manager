@@ -4,558 +4,647 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#101c31">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://*.github.io https://*.trycloudflare.com; frame-src 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; worker-src 'self' blob:; connect-src 'self' https://*.trycloudflare.com; frame-src 'none'; base-uri 'none'">
 <title>车辆管家婆</title>
 <style>
-:root{--bg:#f5f7fb;--ink:#19263e;--muted:#7a8598;--blue:#315fe7;--line:#e8ebf1;--green:#10a572}*{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft Yahei",sans-serif;color:var(--ink)}.shell{max-width:650px;margin:auto;min-height:100vh;padding-bottom:90px}.hero{background:linear-gradient(130deg,#142344,#284b8a);padding:24px 18px 22px;color:white;border-radius:0 0 24px 24px}.hero small{opacity:.68}.hero h1{font-size:24px;margin:7px 0 14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:#ffffff16;border:1px solid #ffffff18;padding:11px;border-radius:12px}.stat strong{display:block;font-size:22px}.stat span{font-size:11px;color:#e0e7ff}.section{padding:16px}.panel{background:white;border:1px solid var(--line);border-radius:17px;padding:16px;margin:0 0 12px;box-shadow:0 6px 30px #22325a08}.sectiontitle{display:flex;align-items:center;justify-content:space-between;margin:0 0 13px}.sectiontitle b{font-size:17px}.tag{font-size:11px;background:#ebf0ff;color:#315fe7;padding:4px 8px;border-radius:20px}.muted{color:var(--muted)}.tiny{font-size:12px}.field{margin:0 0 13px}.field label{display:block;font-size:12px;color:#5e6b7d;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;min-width:0;max-width:100%;font-size:16px;padding:11px 12px;border:1px solid #dce2eb;border-radius:10px;background:#fff;color:var(--ink);outline:none}.field input:focus,.field select:focus{border-color:var(--blue)}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;padding:11px 14px;font-size:14px;font-weight:600;background:var(--blue);color:white;cursor:pointer;min-height:43px}.btn.alt{background:#eef2ff;color:#3455c9}.btn.ghost{background:#f1f4f8;color:#52617b}.btn.danger{background:#fff0ed;color:#c74640}.btn:disabled{opacity:.5}.wide{width:100%}.tabs{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:3;box-shadow:0 -4px 18px #182a4510}.tab{flex:1;border:none;background:none;padding:10px 2px 7px;color:#8190a5;font-size:11px;cursor:pointer}.tab i{display:block;font-style:normal;font-size:21px}.tab.active{color:var(--blue);font-weight:700}.hidden{display:none}.item{border:1px solid var(--line);padding:13px;border-radius:12px;margin-top:9px}.itemhead{display:flex;justify-content:space-between;align-items:center;gap:8px}.item b{font-size:15px}.item .mono{font:12px ui-monospace,monospace;color:#68748a;overflow-wrap:anywhere}.pill{font-size:11px;border-radius:6px;padding:3px 7px;background:#e9f9f1;color:#128864}.pill.sold{background:#eef0f4;color:#728096}.pill.due{background:#fff3e5;color:#c27a20}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.stack{display:flex;gap:7px;flex-wrap:wrap}.money{font-size:22px;font-weight:800;color:#294ed0}.hr{border:none;border-top:1px solid var(--line);margin:13px 0}.empty{text-align:center;color:#8e98a8;padding:25px 10px}.note{font-size:12px;background:#fff9e9;color:#936b1c;border:1px solid #fff0c3;padding:11px;border-radius:10px;margin-bottom:12px}.modal{position:fixed;inset:0;background:#101a3199;z-index:8;display:flex;align-items:end;justify-content:center;overflow:hidden;touch-action:pan-y;overscroll-behavior:contain}.modal.hidden{display:none}.sheet{background:#fff;width:100%;max-width:650px;max-width:100%;padding:20px;border-radius:23px 23px 0 0;max-height:90vh;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;word-break:break-word;padding-bottom:calc(25px + env(safe-area-inset-bottom))}.sheet h2{margin:0 0 16px;font-size:20px}.listrow{border-bottom:1px solid var(--line);padding:10px 0}.listrow:last-child{border:0}.warn{color:#d36634}.success{color:var(--green)}.chip{font-size:12px;background:#f1f4f9;padding:5px 9px;border-radius:7px}.topintro{font-size:12px;color:#d0daef;margin-bottom:12px}
-.shell{padding-bottom:110px}.app-version{text-align:center;font-size:11px;color:#9aa3b1;padding:10px 12px 18px;letter-spacing:.2px}.gate-version{text-align:center;font-size:11px;color:#c3cde0;margin-top:14px}
+:root{--bg:#f5f7fb;--ink:#19263e;--muted:#7a8598;--blue:#315fe7;--line:#e8ebf1;--green:#10a572;--red:#c74640;--amber:#c27a20}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft Yahei",sans-serif;color:var(--ink)}.shell{max-width:650px;margin:auto;min-height:100vh;padding-bottom:110px}
+.hero{background:linear-gradient(130deg,#142344,#284b8a);padding:24px 18px 22px;color:white;border-radius:0 0 24px 24px}.hero small{opacity:.68}.hero h1{font-size:23px;margin:7px 0 4px}.hero .envtag{display:inline-block;font-size:11px;background:#ffd966;color:#5a4300;border-radius:8px;padding:3px 9px;margin-left:6px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}.stat{background:#ffffff16;border:1px solid #ffffff18;padding:11px;border-radius:12px}.stat strong{display:block;font-size:20px}.stat span{font-size:11px;color:#e0e7ff}
+.section{padding:16px}.panel{background:white;border:1px solid var(--line);border-radius:17px;padding:16px;margin:0 0 12px;box-shadow:0 6px 30px #22325a08}
+.sectiontitle{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 13px}.sectiontitle b{font-size:17px}.tag{font-size:11px;background:#ebf0ff;color:#315fe7;padding:4px 8px;border-radius:20px}
+.muted{color:var(--muted)}.tiny{font-size:12px}.field{margin:0 0 13px}.field label{display:block;font-size:12px;color:#5e6b7d;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;min-width:0;max-width:100%;font-size:16px;padding:11px 12px;border:1px solid #dce2eb;border-radius:10px;background:#fff;color:var(--ink);outline:none}
+.field input:focus,.field select:focus{border-color:var(--blue)}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;padding:11px 14px;font-size:14px;font-weight:600;background:var(--blue);color:white;cursor:pointer;min-height:43px}.btn.alt{background:#eef2ff;color:#3455c9}.btn.ghost{background:#f1f4f8;color:#52617b}.btn.danger{background:#fff0ed;color:var(--red)}.btn:disabled{opacity:.5}.wide{width:100%}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:3;box-shadow:0 -4px 18px #182a4510}.tab{flex:1;border:none;background:none;padding:10px 2px 7px;color:#8190a5;font-size:11px;cursor:pointer}.tab i{display:block;font-style:normal;font-size:21px}.tab.active{color:var(--blue);font-weight:700}.hidden{display:none}
+.item{border:1px solid var(--line);padding:13px;border-radius:12px;margin-top:9px}.itemhead{display:flex;justify-content:space-between;align-items:center;gap:8px}.item b{font-size:15px}.item .mono{font:12px ui-monospace,monospace;color:#68748a;overflow-wrap:anywhere}
+.pill{font-size:11px;border-radius:6px;padding:3px 7px;background:#e9f9f1;color:#128864;white-space:nowrap}.pill.sold{background:#eef0f4;color:#728096}.pill.due{background:#fff3e5;color:var(--amber)}.pill.over{background:#ffe9e7;color:var(--red)}.pill.open{background:#eef2f9;color:#52617b}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.stack{display:flex;gap:7px;flex-wrap:wrap}.money{font-size:22px;font-weight:800;color:#294ed0}.hr{border:none;border-top:1px solid var(--line);margin:13px 0}.empty{text-align:center;color:#8e98a8;padding:25px 10px}
+.note{font-size:12px;background:#fff9e9;color:#936b1c;border:1px solid #fff0c3;padding:11px;border-radius:10px;margin-bottom:12px}
+.modal{position:fixed;inset:0;background:#101a3199;z-index:8;display:flex;align-items:end;justify-content:center;overflow:hidden;touch-action:pan-y;overscroll-behavior:contain}.modal.hidden{display:none}
+.sheet{background:#fff;width:100%;max-width:650px;max-width:100%;padding:20px;border-radius:23px 23px 0 0;max-height:90vh;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;word-break:break-word;padding-bottom:calc(25px + env(safe-area-inset-bottom))}.sheet h2{margin:0 0 16px;font-size:20px}
+.two>*,.part-row>*{min-width:0;max-width:100%}
+body.modal-open{overflow:hidden;position:fixed;left:0;right:0;top:0;width:100%}
+.listrow{border-bottom:1px solid var(--line);padding:10px 0}.listrow:last-child{border:0}.warn{color:var(--amber)}.success{color:var(--green)}.chip{font-size:12px;background:#f1f4f9;padding:5px 9px;border-radius:7px}
+.app-version{text-align:center;font-size:11px;color:#9aa3b1;padding:10px 12px 18px}
+.cat-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.cat-col{background:#fafbfe;border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}.cat-head{display:flex;align-items:center;gap:6px;width:100%;padding:11px 12px;background:none;border:0;cursor:pointer;font-size:14px;font-weight:700;color:var(--ink)}.cat-head .cat-count{margin-left:auto;font-size:11px;color:var(--muted);background:#eef2f9;border-radius:12px;padding:2px 8px}.cat-head .chev{font-size:12px;color:var(--muted)}.cat-col.collapsed .chev{transform:rotate(-90deg)}.cat-body{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}.cat-col.collapsed .cat-body{display:none}
+.vcard{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px;cursor:pointer;min-width:0}.vcard:active{background:#f3f6ff}.vcard-top{display:flex;justify-content:space-between;gap:6px;align-items:center}.vcard b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vcard .mono{font-size:11px;color:#68748a;overflow-wrap:anywhere;margin-top:3px}
+.pending-section{margin-bottom:12px}.pending-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.photo-box{margin:8px 0 4px}.car-photo{width:100%;height:150px;object-fit:contain;background:#eef1f6;border-radius:10px;cursor:zoom-in}.photo-ph{height:110px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;color:#9aa6b8;background:#f0f3f8;border-radius:10px;font-size:13px}
+.spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:vm-spin .75s linear infinite;flex:none}@keyframes vm-spin{to{transform:rotate(360deg)}}
+.btn.alt .spin,.btn.ghost .spin,.btn.danger .spin{border-color:rgba(49,95,231,.25);border-top-color:#315fe7}
+.btn.is-busy{pointer-events:none;opacity:.8}
+#vmToast{position:fixed;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:60;display:none;align-items:center;gap:8px;background:rgba(25,38,62,.94);color:#fff;padding:11px 16px;border-radius:13px;font-size:14px;box-shadow:0 10px 30px rgba(11,23,48,.35);max-width:86vw}#vmToast.show{display:flex}#vmToast .t-ok{color:#4ade9e}#vmToast .t-err{color:#ff9b96}
+.login-gate{position:fixed;inset:0;z-index:30;background:linear-gradient(145deg,#142344,#315fa7);display:flex;align-items:center;justify-content:center;padding:24px}.login-card{width:100%;max-width:390px;background:#fff;border-radius:22px;padding:28px 22px;box-shadow:0 24px 70px #07132966}.login-logo{width:58px;height:58px;margin:0 auto 14px;border-radius:17px;background:#315fe7;color:#fff;display:grid;place-items:center;font-size:28px;font-weight:80}.login-card h1{text-align:center;margin:0;font-size:25px}.login-card>p{text-align:center;color:#7a8598;margin:5px 0 24px}.login-card label{display:block;color:#52617b;font-size:14px;margin:13px 0 6px}.login-card input{display:block;width:100%;height:48px;border:1px solid #dce2eb;border-radius:11px;padding:0 13px;font-size:16px;outline:none}.login-card button{width:100%;height:48px;margin-top:20px;border:0;border-radius:11px;background:#315fe7;color:#fff;font-size:16px;font-weight:700}.login-card button:disabled{opacity:.6}.remember-row{display:flex!important;flex-direction:row;align-items:center;gap:8px;font-size:13px!important;color:#52617b;margin:13px 0 0!important}.remember-row input{width:auto!important;height:auto!important;margin:0}.login-card small{display:block;text-align:center;color:#9aa3b1;margin-top:18px}.login-card #gateError{min-height:20px;margin-top:10px;color:var(--red);font-size:13px;text-align:center}
+.auth-pending .shell,.auth-pending .tabs{display:none!important}.app-ready .login-gate{display:none!important}
+.sessionbar{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid #ffffff24;color:#dbe6ff;font-size:13px}.sessionbar button{border:1px solid #ffffff38;background:#ffffff18;color:#fff;border-radius:8px;padding:6px 10px}
+.filterchips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.part-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px}.part-row select,.part-row input{min-width:0;max-width:100%;font-size:16px;padding:11px 10px;border:1px solid #dce2eb;border-radius:10px;background:#fff;color:var(--ink);outline:none}
+.status-chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px}.status-chip{border:1px solid #dce2eb;background:#f1f4f8;color:#52617b;border-radius:20px;padding:8px 12px;font-size:13px;cursor:pointer}.status-chip.active{background:#315fe7;border-color:#315fe7;color:#fff}
+.mini-link{border:0;background:none;color:var(--blue);font-size:13px;padding:0;cursor:pointer;margin:4px 0 10px;text-decoration:underline}
+.vin-row{display:flex;gap:8px;align-items:center}.vin-row input{flex:1;min-width:0;max-width:100%}.vin-scan-btn{flex:none;min-height:43px;padding:11px 12px}
+.scan-sheet{max-height:92vh}.scan-camwrap{position:relative;margin:6px 0 10px;border-radius:12px;overflow:hidden;background:#000}.scan-camwrap video{width:100%;height:230px;object-fit:cover;display:block}
+.scan-frame{position:absolute;left:50%;top:50%;width:72%;height:130px;transform:translate(-50%,-50%);border:2px solid #4ade9e;border-radius:14px;pointer-events:none;box-shadow:0 0 0 2000px rgba(0,0,0,.28)}
+.scan-status{padding:9px 2px;color:var(--muted)}.scan-cand{font:12px ui-monospace,monospace;background:#f1f4f9;border:1px solid var(--line);border-radius:8px;padding:7px 10px;cursor:pointer}
+.scan-ph{height:150px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;color:#9aa6b8;background:#f0f3f8;border-radius:10px;font-size:13px}
 </style>
 </head>
 <body class="auth-pending">
-<div id="loginGate" class="login-gate"><div class="login-card"><div class="login-logo">车</div><h1>车辆管家婆</h1><p>门店车辆销售管理</p><form onsubmit="event.preventDefault();gateLogin()"><label>账号</label><input id="gateUser" autocomplete="username" placeholder="请输入账号"><label>密码</label><input id="gatePass" type="password" autocomplete="current-password" placeholder="请输入密码"><label class="remember-row"><input type="checkbox" id="gateRemember" checked> 记住我，30天内免登录</label><button id="gateSubmit" type="submit">登录</button><div id="gateError" role="alert"></div></form><small>请使用门店分配的账号登录</small><div class="gate-version" id="gateVer"></div></div></div>
+<div id="loginGate" class="login-gate"><div class="login-card"><div class="login-logo">车</div><h1>车辆管家婆</h1><p>门店车辆销售管理</p><form onsubmit="event.preventDefault();gateLogin()"><label>账号</label><input id="gateUser" autocomplete="username" placeholder="请输入账号"><label>密码</label><input id="gatePass" type="password" autocomplete="current-password" placeholder="请输入密码"><label class="remember-row"><input type="checkbox" id="gateRemember" checked> 记住我，30天内免登录</label><button id="gateSubmit" type="submit">登录</button><div id="gateError" role="alert"></div></form><small>请使用门店分配的账号登录</small></div></div>
+
 <div class="shell">
 <header class="hero">
 <small>门店车辆销售管理</small>
-<h1>车辆管家婆
-</h1>
-<p class="topintro">一车一档 · 进销存 · 分期收款 · 收支账本</p>
+<h1>车辆管家婆</h1>
 <div class="sessionbar"><span id="sessionUser"></span><button onclick="logoutLive(true)">退出登录</button></div>
 <div class="stats">
-<div class="stat">
-<strong id="statStock">0</strong>
-<span>在库车辆</span>
-</div>
-<div class="stat">
-<strong id="statSold">0</strong>
-<span>已售车辆</span>
-</div>
-<div class="stat">
-<strong id="statDue">¥0</strong>
-<span>剩余应收</span>
-</div>
+<div class="stat"><strong id="statStock">0</strong><span>在库车辆</span></div>
+<div class="stat"><strong id="statSold">0</strong><span>已售车辆</span></div>
+<div class="stat"><strong id="statDue">¥0</strong><span>剩余应收</span></div>
 </div>
 </header>
 <main class="section">
-<div class="note">仅供功能体验：使用模拟数据；数据暂存在当前浏览器，不会同步到其他手机，也不是正式账本。正式使用需接后端、登录和备份。</div>
+
 <section id="page-home">
-<div class="sectiontitle">
-<b>今日概览</b>
-<span class="tag">老板 / 老板娘</span>
+<div class="sectiontitle"><b>今日概览</b><span class="tag" id="homeRole"></span></div>
+<div class="panel">
+<div class="row"><span class="muted">销售实收（真实到账，含首付）</span><b class="success" id="dashReceived">¥0</b></div>
+<hr class="hr">
+<div class="row"><span class="muted">剩余应收（未收分期/欠款）</span><b class="warn" id="dashReceivable">¥0</b></div>
+<hr class="hr">
+<div class="row"><span class="muted">其中已逾期（仅到期未还部分）</span><b class="warn" id="dashOverdue">¥0</b></div>
+<hr class="hr">
+<div class="row"><span class="muted">单车毛利合计（成交价−进货成本）</span><b id="dashProfit">¥0</b></div>
+<hr class="hr">
+<div class="row"><span class="muted">分期费用 / 利息（单独统计，不计入欠款）</span><b id="dashFeeInterest">¥0 / ¥0</b></div>
 </div>
 <div class="panel">
-<div class="row">
-<span class="muted">累计销售金额</span>
-<b id="salesTotal">¥0</b>
-</div>
-<hr class="hr">
-<div class="row">
-<span class="muted">已收销售款</span>
-<b id="paidTotal">¥0</b>
-</div>
-<hr class="hr">
-<div class="row">
-<span class="muted">分期待收款</span>
-<b class="warn" id="dueTotal">¥0</b>
-</div>
-</div>
-<div class="panel">
-<div class="sectiontitle">
-<b>快速操作</b>
-</div>
+<div class="sectiontitle"><b>快速操作</b></div>
 <div class="two">
 <button class="btn" onclick="switchPage('stock');showAdd()">＋ 车辆入库</button>
-<button class="btn alt" onclick="switchPage('stock')">🚗 选择车辆销售</button>
-<button class="btn alt" onclick="switchPage('payments')">💳 分期收款</button>
-<button class="btn alt" onclick="switchPage('ledger')">🧾 收支记账</button>
+<button class="btn alt" onclick="switchPage('owed')">💳 收款 / 欠款</button>
+<button class="btn alt" onclick="switchPage('customers')">👥 客户跟进</button>
+<button class="btn alt" onclick="switchPage('ledger')">🧾 手工账本</button>
 </div>
 </div>
-<div class="panel">
-<b>最近记录</b>
-<div id="activity">
-</div>
-</div>
+<div class="panel" id="panelDueToday"><b>今日到期</b><div id="dueTodayList"></div></div>
+<div class="panel" id="panelOverdue"><b class="warn">逾期未还</b><div id="overdueList"></div></div>
+<div class="panel" id="panelUpcoming"><b>近期到期</b><div id="upcomingList"></div></div>
+<div class="panel" id="panelFollowDue"><b>待跟进提醒</b><div id="followDueList"></div></div>
+<div class="panel" id="panelChannels"><b>收款渠道实收</b><div id="channelsList"></div></div>
 </section>
+
 <section id="page-stock" class="hidden">
-<div class="sectiontitle">
-<b>车辆库存</b>
-<div class="stack"><button class="btn alt" onclick="showTrash()">🗑 回收站 <span id="trashCount">0</span></button><button class="btn" onclick="showAdd()">＋ 入库</button></div>
-</div>
+<div class="sectiontitle"><b>车辆库存</b><div class="stack"><button class="btn alt" onclick="showTrash()">🗑 回收站 <span id="trashCount">0</span></button><button class="btn" onclick="showAdd()">＋ 入库</button></div></div>
 <div class="panel">
-<div class="field">
-<input id="searchCar" oninput="render()" placeholder="搜索车型 / 车架号">
-</div>
-<div class="stack">
+<div class="field"><input id="searchCar" oninput="render()" placeholder="搜索车型 / 车架号"></div>
+<div class="filterchips">
 <button class="btn ghost" id="filter-all" onclick="setFilter('all')">全部</button>
 <button class="btn ghost" id="filter-stock" onclick="setFilter('stock')">在库</button>
 <button class="btn ghost" id="filter-sold" onclick="setFilter('sold')">已售</button>
 </div>
-<div id="carList">
-</div>
+<div id="carList"></div>
 </div>
 </section>
-<section id="page-payments" class="hidden">
-<div class="sectiontitle">
-<b>分期收款</b>
-<span class="tag">按周 / 按月</span>
-</div>
+
+<section id="page-owed" class="hidden">
+<div class="sectiontitle"><b>收款 / 欠款看板</b><span class="tag">按客户 · 按车</span></div>
 <div class="panel">
-<p class="muted tiny">点击客户车辆，查看还款计划并登记每笔实收。</p>
-<div id="paymentList">
+<div class="field"><input id="searchOwed" oninput="render()" placeholder="搜索客户 / 车型 / 车架号"></div>
+<div class="filterchips">
+<button class="btn ghost" id="of-all" onclick="setOwedFilter('all')">全部</button>
+<button class="btn ghost" id="of-upcoming" onclick="setOwedFilter('upcoming')">未到期</button>
+<button class="btn ghost" id="of-overdue" onclick="setOwedFilter('overdue')">逾期</button>
+<button class="btn ghost" id="of-open" onclick="setOwedFilter('open')">灵活还款</button>
+<button class="btn ghost" id="of-settled" onclick="setOwedFilter('settled')">已结清</button>
 </div>
+<div id="owedList"></div>
 </div>
 </section>
-<section id="page-ledger" class="hidden">
-<div class="sectiontitle">
-<b>收支账本</b>
-<button class="btn" onclick="showLedger()">＋ 记一笔</button>
+
+<section id="page-customers" class="hidden">
+<div class="sectiontitle"><b>客户档案</b><button class="btn" onclick="showCustomerAdd()">＋ 建档</button></div>
+<div class="panel">
+<div class="field"><input id="searchCustomer" oninput="render()" placeholder="搜索姓名 / 电话"></div>
+<div id="customerList"></div>
 </div>
+</section>
+
+<section id="page-ledger" class="hidden">
+<div class="sectiontitle"><b>手工账本</b><button class="btn" onclick="showLedger()">＋ 记一笔</button></div>
 <div class="panel">
 <div class="two">
-<div>
-<span class="muted tiny">手工记账收入</span>
-<div class="money" id="ledgerIn">¥0</div>
-</div>
-<div>
-<span class="muted tiny">手工记账支出</span>
-<div class="money" style="color:#d06352" id="ledgerOut">¥0</div>
-</div>
+<div><span class="muted tiny">手工账收入（不含销售收款）</span><div class="money" id="ledgerIn">¥0</div></div>
+<div><span class="muted tiny">手工账支出</span><div class="money" style="color:#d06352" id="ledgerOut">¥0</div></div>
 </div>
 <hr class="hr">
-<p class="muted tiny">销售收款与手工账分开展示，避免误认为已经自动记账。</p>
-<div id="ledgerList">
-</div>
-</div>
-</section>
-<section id="page-more" class="hidden">
-<div class="sectiontitle">
-<b>功能说明</b>
-</div>
-<div class="panel">
-<b>当前可体验</b>
-<p class="muted">自主新增车辆、按车架号管理、点击售出、一次性/分期、每周或每月还款计划、逐笔登记收款、收支账本。</p>
-<hr class="hr">
-<b>正式版再补充</b>
-<p class="muted">双账号登录、数据库永久保存、自动备份、账单导出、修改与撤销留痕、访问权限及安全连接。</p>
-<button class="btn danger wide" onclick="resetDemo()">重置演示数据</button>
+<p class="muted tiny">销售收款在「收款 / 欠款」中登记，不会重复计入本账本；两类收支分开统计。</p>
+<div id="ledgerList"></div>
 </div>
 </section>
 </main>
-<footer class="app-version">车辆管家婆 · V<span id="appVer"></span></footer>
+<footer class="app-version">车辆管家婆 · V3.0.0</footer>
 </div>
-<button class="refresh-fab" id="refreshButton" onclick="refreshData()" aria-label="刷新数据" title="刷新数据">↻<span>刷新</span></button>
-<nav class="tabs">
-<button class="tab active" data-page="home" onclick="switchPage('home')">
-<i>⌂</i>首页</button>
-<button class="tab" data-page="stock" onclick="switchPage('stock')">
-<i>🚗</i>车辆</button>
-<button class="tab" data-page="payments" onclick="switchPage('payments')">
-<i>▤</i>分期</button>
-<button class="tab" data-page="ledger" onclick="switchPage('ledger')">
-<i>￥</i>账本</button>
-<button class="tab" data-page="more" onclick="switchPage('more')">
-<i>⚙</i>说明</button>
-</nav>
-<input type="file" id="photoCamera" accept="image/jpeg,image/png,image/webp" capture="environment" class="hidden">
-<input type="file" id="photoAlbum" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" class="hidden">
-<div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()">
-<div class="sheet">
-<div class="row">
-<h2 id="modalTitle">
-</h2>
-<button class="btn ghost" onclick="closeModal()">关闭</button>
-</div>
-<div id="modalBody">
-</div>
-</div>
-</div>
-<div id="updateModal" class="modal hidden" onclick="if(event.target===this)laterUpdate()">
-<div class="sheet">
-<h2>发现新版本</h2>
-<p id="updateMsg">系统检测到新版本，是否立即更新？</p>
-<div class="stack row" style="margin-top:16px">
-<button class="btn ghost" onclick="laterUpdate()">稍后更新</button>
-<button class="btn" onclick="nowUpdate()">立即更新</button>
-</div>
-</div>
-</div>
-<div id="vmToast" role="status" aria-live="polite"></div>
-<script>
-const seed=()=>({cars:[{id:'c1',model:'电动车 A款',vin:'DEMO-A00001',buy:3800,category:'new',status:'stock',date:'2026-11-21'},{id:'c2',model:'电动车 B款',vin:'DEMO-B00002',buy:4700,category:'new',status:'stock',date:'2026-11-21'},{id:'c3',model:'电动车 A款',vin:'DEMO-A00003',buy:3800,category:'used',status:'sold',date:'2026-11-20',sale:{price:5600,method:'installment',date:'2026-11-20',down:1600,periods:4,cycle:'month',payments:[{date:'2026-11-20',amount:1600,note:'首付'}]}}],ledger:[{id:'l1',type:'expense',amount:120,date:'2026-11-21',note:'店铺杂费（示例）'}]});
-let db;try{db=JSON.parse(localStorage.getItem('carDemoV1'))||seed()}catch{db=seed()};let filter='all';const $=id=>document.getElementById(id), fmt=n=>'¥'+Number(n||0).toLocaleString('zh-CN',{maximumFractionDigits:2}), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])), today=()=>new Date().toLocaleDateString('sv-SE');const money=n=>Math.round(Number(n||0)*100)/100;
-function save(){try{localStorage.setItem('carDemoV1',JSON.stringify(db))}catch(e){alert('此浏览器无法保存演示数据，请勿用于真实业务。')}render()};function switchPage(p){['home','stock','payments','ledger','more'].forEach(x=>$('page-'+x).classList.toggle('hidden',x!==p));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.page===p));window.scrollTo(0,0);render()};function setFilter(f){filter=f;render()};
-let collapsedCats={new:false,used:false};
-function toggleCat(cat){collapsedCats[cat]=!collapsedCats[cat];render()}
-function vcardHtml(c){return `<div class="vcard" role="button" tabindex="0" onclick="openCarDetail('${c.id}')" onkeydown="if(event.key==='Enter')openCarDetail('${c.id}')"><div class="vcard-top"><b title="${esc(c.model)}">${esc(c.model)}</b><span class="pill ${c.status==='sold'?'sold':''}">${c.status==='sold'?'已售':'在库'}</span></div><div class="mono">${esc(c.vin)}</div></div>`}
-function catBlock(cat,label,items,searching){const collapsed=!searching&&collapsedCats[cat];return `<div class="cat-col${collapsed?' collapsed':''}" data-cat="${cat}"><button class="cat-head" type="button" onclick="toggleCat('${cat}')"><span class="cat-name">${label}</span><span class="cat-count">${items.length}</span><span class="chev">▾</span></button><div class="cat-body">${items.length?items.map(vcardHtml).join(''):'<div class="empty" style="padding:14px 6px">暂无</div>'}</div></div>`}
-function renderCarList(list){
-  const q=($('searchCar')?$('searchCar').value:'').toLowerCase();
-  const searching=!!q;
-  const pending=list.filter(c=>(c.category||'pending')==='pending');
-  const news=list.filter(c=>c.category==='new');
-  const useds=list.filter(c=>c.category==='used');
-  if(!list.length){$('carList').innerHTML='<div class="empty">未找到相关车辆</div>';return}
-  let html='';
-  if(pending.length)html+=`<div class="pending-section"><h3 class="cat-title">待分类 · ${pending.length}</h3><div class="pending-grid">${pending.map(vcardHtml).join('')}</div></div>`;
-  html+='<div class="cat-grid">'+catBlock('new','新车',news,searching)+catBlock('used','旧车',useds,searching)+'</div>';
-  $('carList').innerHTML=html;
-}
-let vmScrollY=0;
-function openModal(t,html){vmScrollY=window.scrollY;$('modalTitle').textContent=t;$('modalBody').innerHTML=html;$('modal').classList.remove('hidden');document.body.classList.add('modal-open')};function closeModal(){$('modal').classList.add('hidden');document.body.classList.remove('modal-open');window.scrollTo(0,vmScrollY)};function field(id,label,type='text',value='',extra=''){return `<div class="field">
-<label>${label}</label>
-<input id="${id}" type="${type}" value="${esc(value)}" ${extra}>
-</div>`};function selectField(id,label,options){return `<div class="field">
-<label>${label}</label>
-<select id="${id}">${options.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select>
-</div>`};function catRadio(id,sel){return `<div class="field"><label>车辆类型（必选）</label><div class="row" style="gap:14px;align-items:center"><label style="display:flex;gap:6px;align-items:center"><input type="radio" name="${id}" value="new" ${sel==='new'?'checked':''}>新车</label><label style="display:flex;gap:6px;align-items:center"><input type="radio" name="${id}" value="used" ${sel==='used'?'checked':''}>旧车</label></div></div>`}function catVal(){const r=document.querySelector('input[name="mCategory"]:checked');return r?r.value:''};function val(id){return $(id).value.trim()};function num(id){return Number(val(id))};function error(s){vmToast(s,'error');return false};function addPhotoArea(){return `<div class="field"><label>车辆照片（可选）</label><div class="stack"><button type="button" class="btn ghost" onclick="pickAddCamera(this)">📷 拍照</button><button type="button" class="btn ghost" onclick="pickAddAlbum(this)">🖼️ 从相册选择</button></div><div id="addPhotoPreview" class="add-photo-preview"></div></div>`}
-function showAdd(prefill){prefill=prefill||{};openModal('车辆入库',field('mModel','车型 / 商品名称','text',prefill.model||'')+field('mVin','车架号（每台车唯一）','text',prefill.vin||'')+field('mBuy','进货成本（元，可不填）','number',prefill.buy??'','min="0" step="0.01"')+catRadio('mCategory',prefill.category||'')+addPhotoArea()+'<div id="addSubmitStatus" class="submit-status"></div><button class="btn wide" id="addSubmitBtn" onclick="addCar()">确认入库</button>');if(typeof clearAddPhoto==='function')clearAddPhoto();renderAddPreview()};function addCar(){let model=val('mModel'),vin=val('mVin'),category=catVal();if(!model||!vin)return error('请填写车型和车架号');if(!category)return error('请选择新车或旧车');if(db.cars.some(x=>x.vin.toLowerCase()===vin.toLowerCase()))return error('该车架号已经登记过');if(num('mBuy')<0)return error('进货成本不能为负');db.cars.unshift({id:crypto.randomUUID(),model,vin,buy:money(num('mBuy')),category,status:'stock',date:today()});save();closeModal()}
-function showSale(id){let c=db.cars.find(x=>x.id===id);if(!c||c.status!=='stock')return;openModal('登记销售 · '+c.model,`<p class="tiny muted">车架号：${esc(c.vin)}</p>${field('salePrice','成交价格（元）','number','', 'min="0" step="0.01"')}${selectField('saleMethod','付款方式',[['full','一次性付款'],['installment','分期付款']])}<div id="installFields" class="hidden">${field('saleDown','首付款（元）','number','0','min="0" step="0.01"')}${field('salePeriods','分期期数','number','6','min="1" step="1"')}${selectField('saleCycle','还款周期',[['month','每月'],['week','每周']])}${field('saleStart','首次还款日期','date',today())}</div>${field('saleDate','销售日期','date',today())}<button class="btn wide" onclick="commitSale('${id}')">确认售出</button>`);$('saleMethod').onchange=()=>$('installFields').classList.toggle('hidden',val('saleMethod')!=='installment');}
-function commitSale(id){let price=num('salePrice'),method=val('saleMethod'),down=method==='full'?price:num('saleDown'),periods=method==='full'?0:num('salePeriods');if(!(price>0))return error('成交价格需大于0');if(down<0||down>price)return error('首付不能小于0或大于成交价格');if(method==='installment'&&(!Number.isInteger(periods)||periods<1||periods>520))return error('期数请填1～520');let date=val('saleDate'),first=method==='installment'?val('saleStart'):null;if(!date||(method==='installment'&&!first))return error('请填写日期');let c=db.cars.find(x=>x.id===id);c.status='sold';c.sale={price:money(price),method,date,down:money(down),periods,cycle:method==='installment'?val('saleCycle'):null,first,payments:down>0?[{date,amount:money(down),note:method==='full'?'一次性付款':'首付'}]:[]};save();closeModal();switchPage(method==='installment'?'payments':'stock')}
-function paid(c){return money((c.sale?.payments||[]).reduce((s,p)=>s+p.amount,0))};function due(c){return money(Math.max(0,(c.sale?.price||0)-paid(c)))};function addPeriod(date,i,cycle){let d=new Date(date+'T12:00:00');if(cycle==='week')d.setDate(d.getDate()+7*i);else {let orig=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+i);let last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(orig,last));}return d.toLocaleDateString('sv-SE')}
-function installmentTable(c){let s=c.sale;if(!s||s.method!=='installment')return '';let principal=money(s.price-s.down),unit=money(principal/s.periods),rows=[];let cumulative=s.down;for(let i=0;i<s.periods;i++){let amount=i===s.periods-1?money(principal-unit*(s.periods-1)):unit;cumulative=money(cumulative+amount);rows.push(`<div class="listrow row">
-<span>第${i+1}期 <span class="muted tiny">${addPeriod(s.first,i,s.cycle)}</span>
-</span>
-<b>${fmt(amount)}</b>
-</div>`)}return rows.join('')}
-function showPay(id){let c=db.cars.find(x=>x.id===id),s=c.sale;openModal('分期收款',`<p class="tiny muted">${esc(c.model)} · ${esc(c.vin)}</p>
-<div class="panel" style="background:#f7f9fc">
-<div class="row">
-<span>成交总价</span>
-<b>${fmt(s.price)}</b>
-</div>
-<div class="row">
-<span>累计已收</span>
-<b class="success">${fmt(paid(c))}</b>
-</div>
-<div class="row">
-<span>未收余额</span>
-<b class="warn">${fmt(due(c))}</b>
-</div>
-</div>${due(c)>0?`${field('payAmount','本次实际收到金额（元）','number',due(c),'min="0" step="0.01"')}${field('payDate','收款日期','date',today())}<button class="btn wide" id="paySubmitBtn" onclick="commitPay('${id}')">登记收款</button>`:'<p class="success">这台车的款项已收齐</p>'}<hr class="hr">
-<b>约定还款计划</b>${installmentTable(c)}<hr class="hr">
-<b>实际收款明细</b>${s.payments.map(p=>`<div class="listrow row">
-<span class="tiny muted">${esc(p.date)} · ${esc(p.note)}</span>
-<b>${fmt(p.amount)}</b>
-</div>`).join('')||'<p class="muted">暂无收款</p>'}`)};function commitPay(id){let c=db.cars.find(x=>x.id===id),amt=num('payAmount'),date=val('payDate');if(!(amt>0)||amt>due(c))return error('收款金额需大于0，且不能超过未收余额');if(!date)return error('请填写收款日期');c.sale.payments.push({date,amount:money(amt),note:'分期收款'});save();showPay(id)}
-function showLedger(){openModal('新增收支记录',selectField('lType','类型',[['income','收入'],['expense','支出']])+field('lAmount','金额（元）','number','','min="0" step="0.01"')+field('lNote','备注（例如租金、进货款等）')+field('lDate','日期','date',today())+'<button class="btn wide" id="ledgerSubmitBtn" onclick="commitLedger()">保存记录</button>')};function commitLedger(){let amount=num('lAmount'),note=val('lNote'),date=val('lDate');if(!(amount>0)||!note||!date)return error('请完整填写金额、备注和日期');db.ledger.unshift({id:crypto.randomUUID(),type:val('lType'),amount:money(amount),note,date});save();closeModal()};function resetDemo(){if(confirm('确定恢复最初模拟数据？本浏览器的演示操作将被清空。')){db=seed();save();switchPage('home')}}
-function render(){let sold=db.cars.filter(c=>c.status==='sold'),ongoing=sold.filter(c=>c.sale?.method==='installment');$('statStock').textContent=db.cars.length-sold.length;$('statSold').textContent=sold.length;let outstanding=money(ongoing.reduce((s,c)=>s+due(c),0));$('statDue').textContent=fmt(outstanding);$('salesTotal').textContent=fmt(sold.reduce((s,c)=>s+c.sale.price,0));$('paidTotal').textContent=fmt(sold.reduce((s,c)=>s+paid(c),0));$('dueTotal').textContent=fmt(outstanding);let q=($('searchCar')?$('searchCar').value:'').toLowerCase();let list=db.cars.filter(c=>(filter==='all'||c.status===filter)&&(c.model+' '+c.vin).toLowerCase().includes(q));renderCarList(list);['all','stock','sold'].forEach(f=>{$('filter-'+f).className='btn '+(filter===f?'alt':'ghost')});$('paymentList').innerHTML=ongoing.map(c=>`<div class="item">
-<div class="itemhead">
-<b>${esc(c.model)}</b>
-<span class="pill ${due(c)?'due':''}">${due(c)?'待收款':'已结清'}</span>
-</div>
-<p class="mono">${esc(c.vin)}</p>
-<div class="row">
-<span class="tiny muted">${c.sale.cycle==='week'?'每周':'每月'} · ${c.sale.periods}期</span>
-<b class="warn">未收 ${fmt(due(c))}</b>
-</div>
-<button style="margin-top:10px" class="btn alt wide" onclick="showPay('${c.id}')">查看计划 / 登记收款</button>
-</div>`).join('')||'<div class="empty">暂无分期销售</div>';$('ledgerIn').textContent=fmt(db.ledger.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0));$('ledgerOut').textContent=fmt(db.ledger.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0));$('ledgerList').innerHTML=db.ledger.map(x=>`<div class="listrow row">
-<div>
-<b>${esc(x.note)}</b>
-<div class="tiny muted">${esc(x.date)}</div>
-</div>
-<b class="${x.type==='income'?'success':'warn'}">${x.type==='income'?'+':'-'}${fmt(x.amount)}</b>
-</div>`).join('')||'<div class="empty">还没有记账记录</div>';$('activity').innerHTML=[...sold.map(c=>({date:c.sale.date,text:'售出 '+c.model+' · '+c.vin})),...db.ledger.map(x=>({date:x.date,text:(x.type==='income'?'收入 ':'支出 ')+x.note}))].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5).map(x=>`<div class="listrow">
-<span class="muted tiny">${esc(x.date)}</span>
-<div>${esc(x.text)}</div>
-</div>`).join('')||'<p class="empty">暂无记录</p>'};render();
-</script>
-<script>
-// 演示版增强层：保留原项目结构，补齐修改、逾期及日期查询。
-document.querySelector('#dueTotal').previousElementSibling.textContent='剩余未收款';
-document.querySelector('#dueTotal').parentElement.insertAdjacentHTML('afterend','<hr class="hr"><div class="row"><span class="muted">其中已逾期</span><b class="warn" id="overdueTotal">¥0</b></div>');
-document.querySelector('#page-ledger .panel').insertAdjacentHTML('afterbegin','<div class="two"><div class="field"><label>开始日期</label><input id="ledgerFrom" type="date" oninput="render()"></div><div class="field"><label>结束日期</label><input id="ledgerTo" type="date" oninput="render()"></div></div>');
 
-function showEdit(id){let c=db.cars.find(x=>x.id===id);openModal('修改车辆',field('mModel','车型','text',c.model)+field('mVin','车架号','text',c.vin)+field('mBuy','进货成本','number',c.buy,'min="0" step="0.01"')+catRadio('mCategory',c.category)+`<button class="btn wide" id="editSubmitBtn" onclick="editCar('${id}')">保存修改</button>`)}
-function editCar(id){let c=db.cars.find(x=>x.id===id),model=val('mModel'),vin=val('mVin'),category=catVal()||c.category;if(!model||!vin)return error('请填写车型和车架号');if(db.cars.some(x=>x.id!==id&&x.vin.toLowerCase()===vin.toLowerCase()))return error('该车架号已经登记过');if(num('mBuy')<0)return error('进货成本不能为负');Object.assign(c,{model,vin,buy:money(num('mBuy')),category});save();closeModal()}
-function showSale(id){let c=db.cars.find(x=>x.id===id);if(!c||c.status!=='stock')return;openModal('登记销售 · '+c.model,`<p class="tiny muted">车架号：${esc(c.vin)}</p>${field('salePrice','成交价格（元）','number','', 'min="0" step="0.01"')}${selectField('saleMethod','付款方式',[['full','一次性付款'],['installment','分期付款']])}<div id="installFields" class="hidden">${field('saleDown','首付款（元）','number','0','min="0" step="0.01"')}${field('salePeriods','分期期数','number','6','min="1" step="1"')}${field('salePeriodAmount','每期金额（留空自动平均）','number','','min="0" step="0.01"')}${selectField('saleCycle','还款周期',[['month','每月'],['week','每周']])}${field('saleStart','首次还款日期','date',today())}</div>${field('saleDate','销售日期','date',today())}<button class="btn wide" id="saleSubmitBtn" onclick="commitSale('${id}')">确认售出</button>`);$('saleMethod').onchange=()=>$('installFields').classList.toggle('hidden',val('saleMethod')!=='installment')}
-function commitSale(id){let price=num('salePrice'),method=val('saleMethod'),down=method==='full'?price:num('saleDown'),periods=method==='full'?0:num('salePeriods'),periodAmount=method==='installment'?num('salePeriodAmount'):0;if(!(price>0))return error('成交价格需大于0');if(down<0||down>price)return error('首付不能小于0或大于成交价格');if(method==='installment'&&(!Number.isInteger(periods)||periods<1||periods>520))return error('期数请填1～520');if(periodAmount<0||periodAmount>0&&money(periodAmount*periods)<money(price-down))return error('每期金额设置不足以还清欠款');let date=val('saleDate'),first=method==='installment'?val('saleStart'):null;if(!date||(method==='installment'&&!first))return error('请填写日期');let c=db.cars.find(x=>x.id===id);c.status='sold';c.sale={price:money(price),method,date,down:money(down),periods,periodAmount:money(periodAmount),cycle:method==='installment'?val('saleCycle'):null,first,payments:down>0?[{date,amount:money(down),note:method==='full'?'一次性付款':'首付'}]:[]};save();closeModal();switchPage(method==='installment'?'payments':'stock')}
-function schedule(c){let s=c.sale;if(!s||s.method!=='installment')return[];let left=money(s.price-s.down),unit=s.periodAmount>0?s.periodAmount:money(left/s.periods),rows=[];for(let i=0;i<s.periods&&left>0;i++){let amount=money(Math.min(unit,left));rows.push({date:addPeriod(s.first,i,s.cycle),amount});left=money(left-amount)}return rows}
-function overdue(c){let received=Math.max(0,paid(c)-c.sale.down),expected=schedule(c).filter(x=>x.date<today()).reduce((n,x)=>n+x.amount,0);return money(Math.max(0,expected-received))}
-function installmentTable(c){return schedule(c).map((x,i)=>`<div class="listrow row"><span>第${i+1}期 <span class="muted tiny">${x.date}</span></span><b>${fmt(x.amount)}</b></div>`).join('')}
-const baseRender=render;
-render=function(){baseRender();let sold=db.cars.filter(c=>c.status==='sold'),ongoing=sold.filter(c=>c.sale?.method==='installment'),outstanding=money(sold.reduce((s,c)=>s+due(c),0));$('statDue').textContent=fmt(outstanding);$('dueTotal').textContent=fmt(outstanding);$('overdueTotal').textContent=fmt(ongoing.reduce((s,c)=>s+overdue(c),0));/* 卡片操作按钮已移入 openCarDetail 详情弹窗 */$('trashCount').textContent=(db.trash||[]).length;let lf=$('ledgerFrom').value,lt=$('ledgerTo').value,ledger=db.ledger.filter(x=>(!lf||x.date>=lf)&&(!lt||x.date<=lt));$('ledgerIn').textContent=fmt(ledger.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0));$('ledgerOut').textContent=fmt(ledger.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0));$('ledgerList').innerHTML=ledger.map(x=>`<div class="listrow row"><div><b>${esc(x.note)}</b><div class="tiny muted">${esc(x.date)}</div></div><b class="${x.type==='income'?'success':'warn'}">${x.type==='income'?'+':'-'}${fmt(x.amount)}</b></div>`).join('')||'<div class="empty">该日期范围暂无记录</div>';if(typeof hydratePhotos==='function')hydratePhotos()};
-render();
-</script>
-<style>
-.modebar{background:#eef4ff;border:1px solid #cfdcff;border-radius:12px;padding:12px;margin-bottom:12px}.modebar .row{align-items:flex-start}.modebar b{color:#2449b8}.modebar .btn{min-height:38px;padding:8px 12px}.busy{pointer-events:none;opacity:.6}.refresh-fab{position:fixed;right:max(14px,calc((100vw - 650px)/2 + 14px));bottom:calc(72px + env(safe-area-inset-bottom));z-index:6;width:54px;height:54px;border:0;border-radius:50%;background:#315fe7;color:#fff;box-shadow:0 8px 24px #1e3b9260;font-size:25px;line-height:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer}.refresh-fab span{font-size:10px;font-weight:700}.refresh-fab:disabled{opacity:.65}
-.cat-title{font-size:14px;margin:14px 0 8px;color:#19263e}.pill.cat{background:#eef4ff;color:#315fe7;border:1px solid #cfdcff}
-</style>
+<nav class="tabs">
+<button class="tab active" data-page="home" onclick="switchPage('home')"><i>⌂</i>首页</button>
+<button class="tab" data-page="stock" onclick="switchPage('stock')"><i>🚗</i>车辆</button>
+<button class="tab" data-page="owed" onclick="switchPage('owed')"><i>▤</i>欠款</button>
+<button class="tab" data-page="customers" onclick="switchPage('customers')"><i>👥</i>客户</button>
+<button class="tab" data-page="ledger" onclick="switchPage('ledger')"><i>￥</i>账本</button>
+</nav>
+
+<input type="file" id="photoCamera" accept="image/jpeg,image/png,image/webp" capture="environment" class="hidden">
+<input type="file" id="photoAlbum" accept="image/jpeg,image/png,image/webp" class="hidden">
+
+<div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()"><div class="sheet"><div class="row"><h2 id="modalTitle"></h2><button class="btn ghost" onclick="closeModal()">关闭</button></div><div id="modalBody"></div></div></div>
+<div id="vmToast" role="status" aria-live="polite"></div>
+
 <script>
-// 联机测试层：Quick Tunnel 地址仅供临时验收，演示模式仍使用 localStorage。
-const API_BASE=location.hostname.endsWith('github.io')?'https://contests-cheats-seek-elliott.trycloudflare.com':location.origin;
-const APP_VERSION='2.6.0';
-const APP_BUILD='20261123-1836';
-const appVerEl=document.getElementById('appVer');if(appVerEl)appVerEl.textContent=APP_VERSION;
-const gateVerEl=document.getElementById('gateVer');if(gateVerEl)gateVerEl.textContent='车辆管家婆 · V'+APP_VERSION;
-function authRead(k){return localStorage.getItem(k)||sessionStorage.getItem(k)||''}
-function authSave(token,user,role,remember){
-  const store=remember?localStorage:sessionStorage,other=remember?sessionStorage:localStorage;
-  store.setItem('vehicle_token',token);store.setItem('vehicle_user',user);store.setItem('vehicle_role',role);
-  other.removeItem('vehicle_token');other.removeItem('vehicle_user');other.removeItem('vehicle_role');
-  localStorage.setItem('vehicle_remember',remember?'1':'');
+const APP_VERSION='3.0.0';
+const API_BASE=location.hostname.endsWith('github.io')?'https://valium-entertaining-rats-practitioners.trycloudflare.com':location.origin;
+const $=id=>document.getElementById(id);
+const fmt=n=>'¥'+Number(n||0).toLocaleString('zh-CN',{maximumFractionDigits:2});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>new Date().toLocaleDateString('sv-SE');
+const money=n=>Math.round(Number(n||0)*100)/100;
+const FOLLOW_STATUS=[['unreachable','未接通'],['contacted','已联系'],['promised','承诺还款'],['no_money','暂时没钱'],['refused','拒绝还款'],['other','其他']];
+
+let db={cars:[],trash:[],customers:[],dashboard:{},ledger:[],payMethods:[]};
+let liveToken=localStorage.getItem('vehicle_v3_token')||sessionStorage.getItem('vehicle_v3_token')||'';
+let liveUser=localStorage.getItem('vehicle_v3_user')||sessionStorage.getItem('vehicle_v3_user')||'';
+let liveRole=localStorage.getItem('vehicle_v3_role')||sessionStorage.getItem('vehicle_v3_role')||'';
+let filter='all', owedFilter='all';
+let collapsedCats={new:false,used:false};
+let photoTarget='', pendingPhoto=null, addDraft=null;
+
+function authSave(token,user,role,remember){const s=remember?localStorage:sessionStorage,o=remember?sessionStorage:localStorage;s.setItem('vehicle_v3_token',token);s.setItem('vehicle_v3_user',user);s.setItem('vehicle_v3_role',role);o.removeItem('vehicle_v3_token');o.removeItem('vehicle_v3_user');o.removeItem('vehicle_v3_role');localStorage.setItem('vehicle_v3_remember',remember?'1':'')}
+function authClear(){['vehicle_v3_token','vehicle_v3_user','vehicle_v3_role'].forEach(k=>{localStorage.removeItem(k);sessionStorage.removeItem(k)})}
+function canManage(){return !!liveToken&&(liveRole==='admin'||liveRole==='owner')}
+
+async function api(method,path,body){
+  const headers={'Content-Type':'application/json'};
+  if(liveToken)headers.Authorization='Bearer '+liveToken;
+  const hasPhoto=!!(body&&typeof body==='object'&&body.photo);
+  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),hasPhoto?60000:25000);
+  let res;
+  try{res=await fetch(API_BASE+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body),signal:ctrl.signal})}
+  catch(e){clearTimeout(timer);const net=new Error(e&&e.name==='AbortError'?'请求超时，请检查网络后重试':'后台暂时无法连接；本次操作没有保存，请勿重复提交。');net.network=true;throw net}
+  clearTimeout(timer);
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok){if(res.status===401&&path!=='/auth/login'){authClear();liveToken='';liveUser='';liveRole='';lockApp()}throw new Error(data.error||('服务器错误 '+res.status))}
+  return data;
 }
-function authClear(){['vehicle_token','vehicle_user','vehicle_role'].forEach(k=>{localStorage.removeItem(k);sessionStorage.removeItem(k)});localStorage.removeItem('vehicle_remember')}
-function authPersistRole(){const store=localStorage.getItem('vehicle_remember')?localStorage:sessionStorage;store.setItem('vehicle_role',liveRole)}
-let liveToken=authRead('vehicle_token'),liveUser=authRead('vehicle_user'),liveRole=authRead('vehicle_role');
-window.VM={get token(){return liveToken},get base(){return API_BASE},get role(){return liveRole}};
-const note=document.querySelector('.note');
-note.insertAdjacentHTML('afterend',`<div class="modebar"><div class="row"><div><b id="modeTitle">演示模式</b><div class="tiny muted" id="modeDesc">数据只保存在当前浏览器</div></div><button class="btn alt" id="modeButton" onclick="openLiveLogin()">联机测试</button></div></div>`);
-function setBusy(on){document.body.classList.toggle('busy',on)}
-async function refreshData(){let b=$('refreshButton');btnBusy(b,'刷新中…');try{await checkUpdateThenRefresh()}catch(e){vmToast(e.message,'error')}finally{btnReset(b)}}
-async function originalRefresh(){if(liveToken)await loadLive();else{try{db=JSON.parse(localStorage.getItem('carDemoV1'))||seed()}catch{db=seed()}render()}}
-function parseVer(v){return String(v||'0.0.0').split('.').map(n=>parseInt(n,10)||0)}
-function verNewer(a,b){const A=parseVer(a),B=parseVer(b);for(let i=0;i<3;i++){if((A[i]||0)>(B[i]||0))return true;if((A[i]||0)<(B[i]||0))return false}return false}
-async function fetchManifest(){const url=location.hostname.endsWith('github.io')?'./version.json':API_BASE+'/version.json';const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('版本清单不可用');return await r.json()}
-function hasUnsaved(){return !$('modal').classList.contains('hidden')||!!pendingPhoto||!!addDraft}
-function showUpdateDialog(m){$('updateMsg').textContent=`发现新版本 ${m.latest}${m.notes?'：'+m.notes:''}，是否立即更新？`;$('updateModal').classList.remove('hidden')}
-function laterUpdate(){$('updateModal').classList.add('hidden')}
-function nowUpdate(){if(hasUnsaved()){if(!confirm('当前有尚未保存的车辆、销售、收款或记账内容，更新前请先保存；确定仍要更新吗？'))return}$('updateModal').classList.add('hidden');doUpdate()}
-async function doUpdate(){try{if('serviceWorker' in navigator){const regs=await navigator.serviceWorker.getRegistrations();for(const r of regs)await r.unregister()}}catch{}const url=new URL(location.href);url.searchParams.set('v',Date.now());location.replace(url.toString())}
-async function checkUpdateThenRefresh(){let manifest=null,verErr=false;try{manifest=await fetchManifest()}catch{verErr=true}if(manifest&&manifest.latest&&verNewer(manifest.latest,APP_VERSION)){showUpdateDialog(manifest);return}await originalRefresh();if(verErr)vmToast('版本检测暂时失败，当前数据已刷新，不影响正常使用。','warn')}
-async function api(method,path,body){let headers={'Content-Type':'application/json'};if(liveToken)headers.Authorization='Bearer '+liveToken;const hasPhoto=!!(body&&typeof body==='object'&&body.photo);const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),hasPhoto?60000:25000);let res;try{res=await fetch(API_BASE+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body),signal:ctrl.signal})}catch(e){clearTimeout(timer);const net=new Error(e&&e.name==='AbortError'?'请求超时，请检查网络后重试':'后台暂时无法连接；本次操作没有保存，请勿重复提交。');net.network=true;throw net}clearTimeout(timer);let data=await res.json().catch(()=>({}));if(!res.ok){if(res.status===401&&path!='/auth/login')logoutLive(false);const err=new Error(data.error||`服务器错误 ${res.status}`);err.status=res.status;throw err}return data}
-function updateMode(){let on=!!liveToken;$('modeTitle').textContent=on?'联机测试模式':'演示模式';$('modeDesc').textContent=on?`已登录：${liveUser} · 数据保存到本机测试数据库`:'数据只保存在当前浏览器';$('modeButton').textContent=on?'退出联机':'联机测试';$('modeButton').onclick=on?()=>logoutLive(true):openLiveLogin;document.querySelector('.note').textContent=on?'联机测试版：仅使用模拟数据。电脑或 Tunnel 停止时无法保存，页面会明确报错。':'仅供功能体验：使用模拟数据；数据暂存在当前浏览器，不会同步到其他手机，也不是正式账本。正式使用需接后端、登录和备份。'}
-function openLiveLogin(){openModal('登录联机测试',field('loginUser','用户名')+field('loginPass','密码','password')+'<p class="tiny muted">仅限测试账号，请勿录入真实客户资料。</p><button class="btn wide" id="liveLoginBtn" onclick="loginLive()">登录</button>')}
-async function loginLive(){let btn=$('liveLoginBtn');btnBusy(btn,'正在登录…');try{let value=await api('POST','/auth/login',{username:val('loginUser'),password:val('loginPass')});liveToken=value.token;liveUser=value.username;liveRole=value.role||'';authSave(liveToken,liveUser,liveRole,false);await loadLive();closeModal();switchPage('home')}catch(e){vmToast(e.message,'error');btnReset(btn)}}
-async function loadLive(){db=await api('GET','/api/state');if(db.me){liveRole=db.me.role||'';authPersistRole()}updateMode();render()}
-async function logoutLive(remote){if(remote&&liveToken)try{await api('POST','/auth/logout',{})}catch{}liveToken='';liveUser='';liveRole='';authClear();try{db=JSON.parse(localStorage.getItem('carDemoV1'))||seed()}catch{db=seed()}updateMode();render()}
+
 let vmSubmitting=false;let vmToastTimer=null;
-function vmToast(msg,type){type=type||'success';const t=$('vmToast');if(!t)return;const icon=type==='success'?'<span class="t-ok">✓</span>':type==='warn'?'<span class="t-err">!</span>':'<span class="t-err">!</span>';t.innerHTML=icon+'<span>'+esc(msg)+'</span>';t.classList.add('show');clearTimeout(vmToastTimer);vmToastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
+function vmToast(msg,type){type=type||'success';const t=$('vmToast');if(!t)return;const icon=type==='success'?'<span class="t-ok">✓</span>':'<span class="t-err">!</span>';t.innerHTML=icon+'<span>'+esc(msg)+'</span>';t.classList.add('show');clearTimeout(vmToastTimer);vmToastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
 function btnBusy(btn,label){if(!btn)return;if(!btn.dataset.orig)btn.dataset.orig=btn.innerHTML;btn.disabled=true;btn.classList.add('is-busy');btn.innerHTML='<span class="spin"></span><span>'+esc(label)+'</span>'}
-function btnDone(btn){if(!btn)return;btn.disabled=false;btn.classList.remove('is-busy');btn.innerHTML='<span class="ok-check">✓</span><span>成功</span>';setTimeout(()=>{if(btn.isConnected)btn.innerHTML=btn.dataset.orig||'确认'},900)}
 function btnReset(btn){if(!btn)return;btn.disabled=false;btn.classList.remove('is-busy');if(btn.dataset.orig)btn.innerHTML=btn.dataset.orig}
 async function liveWrite(task,opts){
-  opts=opts||{};
-  if(vmSubmitting)return;
+  opts=opts||{};if(vmSubmitting)return;
   const btn=opts.btn||null,label=opts.label||'正在保存…';
-  let refreshed=true;
   vmSubmitting=true;btnBusy(btn,label);
-  try{
-    await task();
-    try{await loadLive()}catch(e){refreshed=false}
-    closeModal();
-    if(refreshed)vmToast(opts.success||'操作成功','success');else vmToast('操作已保存，数据刷新失败，请点右下角刷新','warn');
-    if(opts.successCb)opts.successCb();
-  }catch(e){
-    vmToast(e.message||'操作失败，请重试','error');
-  }finally{
-    vmSubmitting=false;
-    if(btn)setTimeout(()=>{refreshed?btnDone(btn):btnReset(btn)},600);
-  }
+  let res;
+  try{res=await task();let refreshed=true;try{await loadLive()}catch(e){refreshed=false}closeModal();
+    if(refreshed)vmToast(opts.success||'操作成功','success');else vmToast('操作已保存，数据刷新失败，请点刷新重试','warn');
+    if(opts.successCb)opts.successCb(res);}
+  catch(e){vmToast(e.message||'操作失败，请重试','error')}
+  finally{vmSubmitting=false;if(btn)setTimeout(()=>btnReset(btn),600)}
 }
-const demoAddCar=addCar,demoEditCar=editCar,demoCommitSale=commitSale,demoCommitPay=commitPay,demoCommitLedger=commitLedger;
-let photoTarget='';let photoMode='car';let pendingPhoto=null;let addDraft=null;let photoBusyBtn=null;
+function uuid4(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=crypto.getRandomValues(new Uint8Array(1))[0]&15;return (c==='x'?r:(r&3|8)).toString(16)})}
+function partRowHtml(method){
+  const opts=db.payMethods.map(p=>`<option value="${p.v}" ${p.v===method?'selected':''}>${p.label}</option>`).join('');
+  return `<div class="part-row" data-part><select class="partMethod">${opts}</select><input class="partAmount" type="number" min="0" step="0.01" placeholder="金额（元）"><button type="button" class="btn ghost partRemove" onclick="removePartRow(this)" aria-label="删除渠道">✕</button></div>`;
+}
+function removePartRow(btn){const row=btn.closest('.part-row');if(row&&row.parentNode.querySelectorAll('.part-row').length>1)row.remove()}
+function parsePartRows(containerId,totalCents,label){
+  const rows=[...document.querySelectorAll('#'+containerId+' .part-row')];
+  const out=[];let sum=0;
+  for(const r of rows){const m=r.querySelector('.partMethod').value;const a=Number(r.querySelector('.partAmount').value||0);
+    if(!(a>=0))throw new Error(label+'金额不能为负');if(a>0||rows.length>1){out.push({pay_method:m,amount:Math.round(a*100)/100});sum+=Math.round(a*100)}}
+  if(rows.length===1&&out.length===0)return null;
+  if(Math.abs(sum-totalCents)>1){const diff=(Math.abs(sum-totalCents)/100).toFixed(2);throw new Error(`各渠道金额合计与${label}总额不符，差额 ${diff} 元`)}
+  return out;
+}
+
+function switchPage(p){['home','stock','owed','customers','ledger'].forEach(x=>$('page-'+x).classList.toggle('hidden',x!==p));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.page===p));window.scrollTo(0,0);render()}
+function setFilter(f){filter=f;render()}
+function setOwedFilter(f){owedFilter=f;render()}
+function toggleCat(cat){collapsedCats[cat]=!collapsedCats[cat];render()}
+
+let vmScrollY=0;
+function openModal(t,html){vmScrollY=window.scrollY;$('modalTitle').textContent=t;$('modalBody').innerHTML=html;$('modal').classList.remove('hidden');document.body.classList.add('modal-open')}
+function closeModal(){$('modal').classList.add('hidden');document.body.classList.remove('modal-open');window.scrollTo(0,vmScrollY);pendingPhoto=null}
+function field(id,label,type='text',value='',extra=''){return `<div class="field"><label>${label}</label><input id="${id}" type="${type}" value="${esc(value)}" ${extra}></div>`}
+function vinField(id,label,value=''){return `<div class="field"><label>${label}</label><input id="${id}" value="${esc(value)}" autocomplete="off" spellcheck="false"></div>`}
+function selectField(id,label,options,value){return `<div class="field"><label>${label}</label><select id="${id}">${options.map(([v,t])=>`<option value="${v}" ${String(v)===String(value)?'selected':''}>${t}</option>`).join('')}</select></div>`}
+function val(id){const e=$(id);return e?e.value.trim():''}
+function num(id){return Number(val(id))}
+function err(s){vmToast(s,'error');return false}
+function payMethodOptions(sel){return db.payMethods.map(p=>[p.v,p.label+(p.v===sel?' ✓':'')])}
+
+/* ---------- 照片 ---------- */
 async function compressImage(file){
-  const isHeic=file.type==='image/heic'||file.type==='image/heif'||/\.heic$/i.test(file.name)||/\.heif$/i.test(file.name);
-  if(isHeic)throw new Error('HEIC 格式暂不支持上传，请改用 JPG 拍摄或在相册选择 JPG 图片');
   if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('仅支持 JPG / PNG / WebP 图片');
   if(file.size>20*1024*1024)throw new Error('原图超过 20MB，请换一张较小的照片');
   const url=URL.createObjectURL(file);
-  try{
-    const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('图片无法打开，可能已损坏'));i.src=url});
-    let w=img.naturalWidth,h=img.naturalHeight;
-    if(!w||!h)throw new Error('图片尺寸无效');
-    const maxEdge=1280;
-    if(Math.max(w,h)>maxEdge){const k=maxEdge/Math.max(w,h);w=Math.round(w*k);h=Math.round(h*k)}
-    const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
-    canvas.getContext('2d').drawImage(img,0,0,w,h);
-    let quality=0.82;
-    let blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality));
+  try{const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('图片无法打开，可能已损坏'));i.src=url});
+    let w=img.naturalWidth,h=img.naturalHeight;if(!w||!h)throw new Error('图片尺寸无效');
+    const maxEdge=1280;if(Math.max(w,h)>maxEdge){const k=maxEdge/Math.max(w,h);w=Math.round(w*k);h=Math.round(h*k)}
+    const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
+    let quality=0.85;let blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality));
     while(blob.size>500*1024&&quality>0.5){quality-=0.1;blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality))}
     if(blob.size>1500*1024)throw new Error('压缩后图片仍超过 1.5MB，请换一张照片');
-    return blob;
-  }finally{URL.revokeObjectURL(url)}
+    return blob;}
+  finally{URL.revokeObjectURL(url)}
 }
+let photoBusyBtn=null;
 async function handlePhoto(file){
   if(!file){photoBusyBtn=null;return;}
   btnBusy(photoBusyBtn,'处理中…');
-  const isNew=(photoMode==='new'||!photoTarget);
-  let rawUrl=null;
-  try{
-    rawUrl=URL.createObjectURL(file);
-    if(isNew){
-      if(pendingPhoto&&pendingPhoto.previewUrl)URL.revokeObjectURL(pendingPhoto.previewUrl);
-      pendingPhoto={dataUrl:null,previewUrl:rawUrl};
-      renderAddPreview();
-    }
-    const blob=await compressImage(file);
-    const dataUrl=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=()=>rej(new Error('图片读取失败'));fr.readAsDataURL(blob)});
-    if(isNew){
-      if(pendingPhoto&&pendingPhoto.previewUrl)URL.revokeObjectURL(pendingPhoto.previewUrl);
-      pendingPhoto={dataUrl,previewUrl:URL.createObjectURL(blob)};
-      renderAddPreview();
-    }else{
-      vmToast('正在上传照片…');
-      await api('POST',`/api/cars/${photoTarget}/photo`,{photo:dataUrl});
-      await loadLive();
-      vmToast('照片已更新','success');
-    }
-  }catch(err){
-    const msg=err.message||'上传失败，请重试';
-    if(isNew&&pendingPhoto&&!pendingPhoto.dataUrl){
-      if(pendingPhoto.previewUrl)URL.revokeObjectURL(pendingPhoto.previewUrl);
-      pendingPhoto=null;renderAddPreview();
-    }
-    vmToast(msg,'error');
-  }finally{btnReset(photoBusyBtn);photoBusyBtn=null}
+  try{const blob=await compressImage(file);const dataUrl=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=()=>rej(new Error('图片读取失败'));fr.readAsDataURL(blob)});
+    if(photoTarget){await api('POST',`/api/cars/${photoTarget}/photo`,{photo:dataUrl});await loadLive();vmToast('照片已更新','success')}
+    else{pendingPhoto=dataUrl;renderAddPreview()}
+  }catch(e){vmToast(e.message||'上传失败，请重试','error')}
+  finally{btnReset(photoBusyBtn);photoBusyBtn=null}
 }
-function renderAddPreview(){
-  const box=$('addPhotoPreview');if(!box)return;
-  if(pendingPhoto){box.innerHTML=`<img class="car-photo" src="${pendingPhoto.previewUrl}" alt="车辆照片预览"><div class="stack" style="margin-top:6px"><button type="button" class="btn ghost" onclick="clearAddPhoto()">移除照片</button></div>`}
-  else{box.innerHTML=''}
-}
-function clearAddPhoto(){if(pendingPhoto&&pendingPhoto.previewUrl)URL.revokeObjectURL(pendingPhoto.previewUrl);pendingPhoto=null;renderAddPreview()}
-function pickCamera(id,btn){photoTarget=id;photoMode='car';photoBusyBtn=btn;$('photoCamera').click()}
-function pickAlbum(id,btn){photoTarget=id;photoMode='car';photoBusyBtn=btn;$('photoAlbum').click()}
-function pickAddCamera(btn){photoMode='new';photoBusyBtn=btn;$('photoCamera').click()}
-function pickAddAlbum(btn){photoMode='new';photoBusyBtn=btn;$('photoAlbum').click()}
+function renderAddPreview(){const box=$('addPhotoPreview');if(!box)return;box.innerHTML=pendingPhoto?`<img class="car-photo" src="${pendingPhoto}" alt="预览">` :''}
+function pickCamera(id,btn){photoTarget=id;photoBusyBtn=btn;$('photoCamera').click()}
+function pickAlbum(id,btn){photoTarget=id;photoBusyBtn=btn;$('photoAlbum').click()}
+function pickAddCamera(btn){photoTarget='';photoBusyBtn=btn;$('photoCamera').click()}
+function pickAddAlbum(btn){photoTarget='';photoBusyBtn=btn;$('photoAlbum').click()}
 $('photoCamera').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';handlePhoto(f)});
 $('photoAlbum').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';handlePhoto(f)});
-function openLightbox(src){let lb=$('lightbox');if(!lb){lb=document.createElement('div');lb.id='lightbox';lb.onclick=closeLightbox;lb.innerHTML='<img alt="车辆大图">';document.body.appendChild(lb)}lb.querySelector('img').src=src;lb.classList.add('open')}
-function closeLightbox(){const lb=$('lightbox');if(lb)lb.classList.remove('open')}
-function photoFail(img){const box=img.closest('.photo-box');if(!box)return;const pid=box.dataset.pid;box.innerHTML='<div class="photo-fail"><span>⚠️</span>图片加载失败<button class="btn ghost" onclick="retryPhoto(\''+pid+'\')">重新加载</button></div>'}
 const photoUrls=new Map();
 async function loadCarPhoto(pid,box){
-  if(typeof VM==='undefined'||!VM.token||!box)return;
-  try{
-    const r=await fetch(VM.base+'/api/cars/'+encodeURIComponent(pid)+'/photo',{headers:{Authorization:'Bearer '+VM.token}});
-    if(!r.ok)throw new Error('图片加载失败');
-    const blob=await r.blob();
-    const old=photoUrls.get(pid);if(old)URL.revokeObjectURL(old);
-    const url=URL.createObjectURL(blob);photoUrls.set(pid,url);
-    box.innerHTML='<img class="car-photo" data-pid="'+pid+'" src="'+url+'" alt="车辆图片" onclick="openLightbox(this.src)" onerror="photoFail(this)">';
-  }catch(e){
-    if(box.isConnected)box.innerHTML='<div class="photo-fail"><span>⚠️</span>图片加载失败<button class="btn ghost" onclick="retryPhoto(\''+pid+'\')">重新加载</button></div>';
-  }
+  if(!liveToken||!box)return;
+  try{const r=await fetch(API_BASE+'/api/cars/'+encodeURIComponent(pid)+'/photo',{headers:{Authorization:'Bearer '+liveToken}});if(!r.ok)throw new Error('图片加载失败');
+    const blob=await r.blob();const old=photoUrls.get(pid);if(old)URL.revokeObjectURL(old);const url=URL.createObjectURL(blob);photoUrls.set(pid,url);
+    box.innerHTML='<img class="car-photo" src="'+url+'" alt="车辆图片" onclick="window.open(this.src)">';}
+  catch(e){box.innerHTML='<div class="photo-ph"><span>⚠️</span>图片加载失败</div>'}
 }
-function hydratePhotos(){document.querySelectorAll('.photo-box[data-pid]').forEach(box=>{if(box.querySelector('img'))return;loadCarPhoto(box.dataset.pid,box)});}
-function retryPhoto(pid){const box=document.querySelector('.photo-box[data-pid="'+pid+'"]');if(!box||typeof VM==='undefined'||!VM.token)return;box.innerHTML='<div class="photo-ph">加载中…</div>';loadCarPhoto(pid,box)}
-hydratePhotos();
-addCar=function(){if(!liveToken)return demoAddCar();let model=val('mModel'),vin=val('mVin'),buy=num('mBuy'),category=catVal();if(!model||!vin)return error('请填写车型和车架号');if(!category)return error('请选择新车或旧车');if(buy<0)return error('进货成本不能为负');addDraft={model,vin,buy,category};if(!pendingPhoto){openModal('无照片确认',`<p>当前车辆没有上传照片，确定直接保存吗？</p><div class="two"><button class="btn ghost" onclick="backToAdd()">返回拍照</button><button class="btn" onclick="submitAddCar()">确认无照片保存</button></div>`);return}submitAddCar()}
-function backToAdd(){showAdd(addDraft)}
-function addStatus(html,cls){const s=$('addSubmitStatus');if(!s)return;s.className='submit-status'+(cls?' '+cls:'');s.innerHTML=html||''}
+function hydratePhotos(){document.querySelectorAll('.photo-box[data-pid]').forEach(box=>{if(box.querySelector('img'))return;if(!box.dataset.hasPhoto)return;loadCarPhoto(box.dataset.pid,box)})}
+
+/* ---------- 车辆入库 ---------- */
+function showAdd(){
+  openModal('车辆入库',
+    field('mModel','车型 / 商品名称')+vinField('mVin','车架号（每台车唯一）')+
+    field('mBuy','进货成本（元，可不填）','number','','min="0" step="0.01"')+
+    `<div class="field"><label>车辆类型（必选）</label><div class="row" style="gap:14px"><label style="display:flex;gap:6px;align-items:center"><input type="radio" name="mCategory" value="new">新车</label><label style="display:flex;gap:6px;align-items:center"><input type="radio" name="mCategory" value="used">旧车</label></div></div>`+
+    `<div class="field"><label>车辆照片（可选）</label><div class="stack"><button type="button" class="btn ghost" onclick="pickAddCamera(this)">📷 拍照</button><button type="button" class="btn ghost" onclick="pickAddAlbum(this)">🖼️ 相册</button></div><div id="addPhotoPreview" class="add-photo-preview"></div></div>`+
+    '<button class="btn wide" id="addSubmitBtn" onclick="submitAddCar()">确认入库</button>');
+  pendingPhoto=null;addDraft=null;renderAddPreview();
+}
+function catVal(){const r=document.querySelector('input[name="mCategory"]:checked');return r?r.value:''}
 async function reconcileByVin(vin){
-  try{
-    const state=await api('GET','/api/state');
-    const target=String(vin||'').trim().toLowerCase();
-    const hit=(state.cars||[]).find(c=>String(c.vin||'').trim().toLowerCase()===target);
-    return hit?'saved':'notfound';
-  }catch(e){return 'unknown'}
+  try{const state=await api('GET','/api/state');const target=String(vin||'').trim().toLowerCase();
+    const hit=(state.cars||[]).find(c=>String(c.vin||'').trim().toLowerCase()===target);return hit?'saved':'notfound';}
+  catch(e){return 'unknown'}
 }
 async function submitAddCar(){
-  if(!addDraft||vmSubmitting)return;
+  if(vmSubmitting)return;
+  const model=val('mModel'),vin=val('mVin'),category=catVal();
+  if(!model||!vin)return err('请填写车型和车架号');if(!category)return err('请选择新车或旧车');
+  const buy=num('mBuy');if(buy<0)return err('进货成本不能为负');
+  addDraft={model,vin,buy,category};
   const btn=$('addSubmitBtn');
-  const hasPhoto=!!(pendingPhoto&&pendingPhoto.dataUrl);
-  vmSubmitting=true;
-  btnBusy(btn,hasPhoto?'正在上传照片，网络较慢时请耐心等待，请勿重复点击…':'正在入库…');
-  addStatus(hasPhoto?'<span class="spin"></span>正在上传照片，网络较慢时请耐心等待，请勿重复点击…':'<span class="spin"></span>正在入库…');
+  const hasPhoto=!!pendingPhoto;
+  vmSubmitting=true;btnBusy(btn,hasPhoto?'正在上传照片，网络较慢时请耐心等待，请勿重复点击…':'正在入库…');
   try{
-    const body={model:addDraft.model,vin:addDraft.vin,buy:addDraft.buy,category:addDraft.category,date:today()};
-    if(pendingPhoto)body.photo=pendingPhoto.dataUrl;
+    const body={model,vin,buy,category,date:today()};if(pendingPhoto)body.photo=pendingPhoto;
     await api('POST','/api/cars',body);
-    if(pendingPhoto&&pendingPhoto.previewUrl)URL.revokeObjectURL(pendingPhoto.previewUrl);
-    pendingPhoto=null;addDraft=null;
-    closeModal();
-    let refreshed=true;
-    try{await loadLive()}catch(e){refreshed=false}
-    addStatus('');
-    if(refreshed){vmToast('车辆入库成功','success');btnDone(btn)}else{vmToast('车辆已保存，数据刷新失败，请点右下角刷新','warn');btnReset(btn)}
+    pendingPhoto=null;addDraft=null;closeModal();
+    let refreshed=true;try{await loadLive()}catch(e){refreshed=false}
+    if(refreshed){vmToast('车辆入库成功','success');btnReset(btn)}else{vmToast('车辆已保存，数据刷新失败，请点刷新重试','warn');btnReset(btn)}
   }catch(e){
     let msg=e.message||'入库失败，请重试';
-    let cls='err';let toastType='error';
     if(e.network&&addDraft){
       const result=await reconcileByVin(addDraft.vin);
-      if(result==='saved'){msg='该车架号可能已保存（网络超时未收到回执），请勿重复提交，可在车辆列表核对。';cls='warn';toastType='warn'}
-      else if(result==='unknown'){msg='结果未确认：网络异常，请稍后刷新列表核对，请勿重复提交。';cls='warn';toastType='warn'}
+      if(result==='saved'){msg='该车架号可能已保存（网络超时未收到回执），请勿重复提交，可在车辆列表核对。'}
+      else if(result==='unknown'){msg='结果未确认：网络异常，请稍后刷新列表核对，请勿重复提交。'}
       else{msg='未查询到该车架号，可检查信息后重新提交。'}
     }
-    addStatus('<span>!</span>'+esc(msg),cls);
-    vmToast(msg,toastType);
-    btnReset(btn);
+    vmToast(msg,e.network?'warn':'error');btnReset(btn);
   }finally{vmSubmitting=false}
 }
-editCar=function(id){if(!liveToken)return demoEditCar(id);let c=db.cars.find(x=>x.id===id),model=val('mModel'),vin=val('mVin'),buy=num('mBuy'),category=catVal()||(c&&c.category);if(!model||!vin)return error('请填写车型和车架号');return liveWrite(()=>api('PATCH',`/api/cars/${encodeURIComponent(id)}`,{model,vin,buy,category}),{btn:$('editSubmitBtn'),label:'正在保存…',success:'车辆修改已保存'})}
-commitSale=function(id){if(!liveToken)return demoCommitSale(id);let price=num('salePrice'),method=val('saleMethod'),down=method==='full'?price:num('saleDown'),periods=method==='full'?0:num('salePeriods'),periodAmount=method==='installment'?num('salePeriodAmount'):0,date=val('saleDate');if(!(price>0)||!date)return error('请填写正确的成交价格和日期');let body={price,method,date,down,periods,periodAmount,cycle:method==='installment'?val('saleCycle'):null,first:method==='installment'?val('saleStart'):null};return liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/sell`,body),{btn:$('saleSubmitBtn'),label:'正在保存…',success:'售出登记成功',successCb:()=>switchPage(method==='installment'?'payments':'stock')})}
-commitPay=function(id){if(!liveToken)return demoCommitPay(id);let amount=num('payAmount'),date=val('payDate');if(!(amount>0)||!date)return error('请填写正确的收款金额和日期');return liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/payments`,{amount,date,note:'分期收款'}),{btn:$('paySubmitBtn'),label:'正在保存…',success:'收款已登记',successCb:()=>showPay(id)})}
-commitLedger=function(){if(!liveToken)return demoCommitLedger();let amount=num('lAmount'),note=val('lNote'),date=val('lDate');if(!(amount>0)||!note||!date)return error('请完整填写金额、备注和日期');return liveWrite(()=>api('POST','/api/ledger',{type:val('lType'),amount,note,date}),{btn:$('ledgerSubmitBtn'),label:'正在保存…',success:'记账成功'})}
-function canManage(){return typeof liveToken!=='undefined'&&!!liveToken&&(liveRole==='admin'||liveRole==='owner')}
+
+/* ---------- 销售登记 ---------- */
+function customerSelectHtml(sel){
+  const opts=[['','— 选择已有客户 —'],...db.customers.map(c=>[c.id,c.name+(c.phone?' · '+c.phone:'')]) ,['__new','＋ 新建客户']];
+  return selectField('saleCustomer','客户（必填）',opts,sel||'');
+}
+function showSale(id){
+  const c=db.cars.find(x=>x.id===id);if(!c||c.status!=='stock')return;
+  openModal('登记销售 · '+c.model,
+    `<p class="tiny muted">车架号：${esc(c.vin)}${c.buy?' · 进货成本 '+fmt(c.buy):''}</p>`+
+    customerSelectHtml('')+
+    '<div id="newCustFields" class="hidden">'+field('ncName','客户姓名（必填）')+field('ncPhone','联系电话（选填）')+'</div>'+
+    field('salePrice','成交价格（元）','number','','min="0" step="0.01"')+
+    selectField('saleMethod','付款方式',[['full','一次性付款'],['installment','分期付款']],'installment')+
+    selectField('salePayMethod','收款方式',db.payMethods.map(p=>[p.v,p.label]),'cash')+
+    '<div id="installFields">'+
+    `<div class="field"><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="saleFlexible"> 灵活还款：不设固定期数，按实收与欠款登记</label></div>`+
+    '<div id="fixedFields">'+
+    field('saleDown','首付款（元）','number','0','min="0" step="0.01"')+
+    `<div class="field" id="downPartsWrap" style="margin-top:-4px"><label>首付收款方式（可拆分多渠道；首付 0 元无需选择）</label><div id="downParts">${partRowHtml('cash')}</div><button type="button" class="btn ghost" onclick="addPartRow('downParts')">＋ 添加另一种付款方式</button></div>`+
+    field('salePeriods','分期期数','number','12','min="1" step="1"')+
+    field('salePeriodAmount','每期金额（留空自动平均）','number','','min="0" step="0.01"')+
+    selectField('saleCycle','还款周期',[['month','每月'],['week','每周']],'month')+
+    field('saleStart','首次还款日期','date',today())+
+    '</div>'+
+    '<div class="two">'+field('saleFee','分期费用（元，默认0）','number','0','min="0" step="0.01"')+field('saleInterest','利息（元，默认0，不自动计息）','number','0','min="0" step="0.01"')+'</div>'+
+    '</div>'+
+    field('saleDate','销售日期','date',today())+
+    '<button class="btn wide" id="saleSubmitBtn" onclick="commitSale(\''+id+'\')">确认售出</button>');
+  $('saleCustomer').onchange=()=>{$('newCustFields').classList.toggle('hidden',val('saleCustomer')!=='__new')};
+  $('saleMethod').onchange=()=>{$('installFields').classList.toggle('hidden',val('saleMethod')!=='installment')};
+  $('saleFlexible').onchange=()=>{$('fixedFields').classList.toggle('hidden',$('saleFlexible').checked)};
+  $('saleDown').oninput=toggleDownParts;toggleDownParts();
+}
+function toggleDownParts(){const w=$('downPartsWrap');if(!w)return;const d=Number($('saleDown').value||0);w.style.display=d>0?'':'none'}
+function commitSale(id){
+  const price=num('salePrice'),method=val('saleMethod'),payMethod=val('salePayMethod'),date=val('saleDate');
+  if(!(price>0))return err('成交价格需大于0');if(!date)return err('请填写销售日期');
+  let customerId=val('saleCustomer'),newCustomer=null;
+  if(customerId==='__new'){const name=val('ncName');if(!name)return err('请填写客户姓名');newCustomer={name,phone:val('ncPhone')};customerId=''}
+  else if(!customerId)return err('请选择客户或新建客户');
+  const body={price,method,date,pay_method:payMethod,customer_id:customerId||undefined,new_customer:newCustomer||undefined};
+  if(method==='installment'){
+    const flexible=$('saleFlexible').checked;
+    body.flexible=flexible;
+    body.down=num('saleDown');body.fee=num('saleFee');body.interest=num('saleInterest');
+    if(!flexible){body.periods=num('salePeriods');body.periodAmount=num('salePeriodAmount');body.cycle=val('saleCycle');body.first=val('saleStart');
+      if(!Number.isInteger(body.periods)||body.periods<1||body.periods>520)return err('期数请填1～520');if(!body.first)return err('请填写首次还款日期');}
+    if(body.down<0||body.down>price)return err('首付不能小于0或大于成交价');
+    if(body.down>0){
+      let dparts;try{dparts=parsePartRows('downParts',Math.round(body.down*100),'首付')}catch(e){return err(e.message)}
+      if(dparts&&dparts.length){body.down_parts=dparts;body.pay_method=dparts[0].pay_method}
+    }
+  }else{body.down=price;body.fee=0;body.interest=0}
+  return liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/sell`,body),{btn:$('saleSubmitBtn'),label:'正在保存…',success:'售出登记成功',successCb:()=>switchPage('owed')});
+}
+
+/* ---------- 收款 ---------- */
+function addPartRow(box){const el=$(box);if(!el)return;if(el.querySelectorAll('.part-row').length>=5)return vmToast('最多拆分 5 笔渠道','error');el.insertAdjacentHTML('beforeend',partRowHtml('cash'))}
+function fillRemaining(id){const c=db.cars.find(x=>x.id===id);if(c&&c.sale)$('payAmount').value=c.sale.remaining}
+function showPay(id){
+  const c=db.cars.find(x=>x.id===id),s=c.sale;if(!s)return;
+  openModal('登记收款 · '+c.model,
+    `<p class="tiny muted">${esc(s.customerName)} · ${esc(c.vin)}</p>
+    <div class="panel" style="background:#f7f9fc">
+    <div class="row"><span>成交总价</span><b>${fmt(s.price)}</b></div>
+    <div class="row"><span>累计已收</span><b class="success">${fmt(s.received)}</b></div>
+    <div class="row"><span>未收余额</span><b class="warn">${fmt(s.remaining)}</b></div></div>`+
+    (s.remaining>0
+      ? field('payAmount','本次实际收到金额（元）','number','','min="0.01" step="0.01"')+
+        `<button type="button" class="mini-link" onclick="fillRemaining('${id}')">填入剩余欠款 ${fmt(s.remaining)}</button>`+
+        field('payDate','收款日期（可补记历史，不可选未来）','date',today())+
+        `<div class="field"><label>收款方式（同一笔可拆分多渠道）</label><div id="payParts">${partRowHtml('cash')}</div><button type="button" class="btn ghost" onclick="addPartRow('payParts')">＋ 添加另一种付款方式</button></div>`+
+        field('payNote','备注（选填）','text','')+
+        '<button class="btn wide" id="paySubmitBtn" onclick="commitPay(\''+id+'\')">登记收款</button>'
+      : '<p class="success">这台车的款项已收齐</p>'));
+}
+function commitPay(id){
+  const amount=num('payAmount'),date=val('payDate');
+  if(!(amount>0))return err('收款金额需大于0');if(!date)return err('请填写收款日期');
+  let parts;
+  try{parts=parsePartRows('payParts',Math.round(amount*100),'收款')}catch(e){return err(e.message)}
+  const body={amount,date,note:val('payNote')||'收款',client_req_id:uuid4()};
+  if(parts&&parts.length>1){body.parts=parts}else{body.pay_method=parts?parts[0].pay_method:'cash'}
+  return liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/payments`,body),
+    {btn:$('paySubmitBtn'),label:'正在保存…',success:'收款已登记',
+     successCb:(res)=>{if(res&&typeof res.remaining==='number')vmToast(`本次收款 ${fmt(res.amount)}，剩余 ${fmt(res.remaining)}`,'success');openCarDetail(id)}});
+}
+
+/* ---------- 收款冲正 ---------- */
+function showReverse(pid,carId){
+  const p=(db.cars.find(x=>x.id===carId)?.sale?.payments||[]).find(x=>x.id===pid);if(!p)return;
+  openModal('冲正这笔收款',
+    `<div class="listrow"><b>${fmt(p.amount)}</b><div class="tiny muted">${esc(p.date)} · ${esc(p.payMethodLabel)} · ${esc(p.note)}</div></div>
+    <p class="tiny muted">冲正不会删除原流水，会保留更正记录与操作人；冲正后余额、分期状态与逾期金额自动重新计算。</p>`+
+    field('revReason','更正原因（必填）')+
+    '<div class="two"><button class="btn ghost" onclick="closeModal()">取消</button><button class="btn danger" id="revSubmitBtn" onclick="confirmReverse(\''+pid+'\',\''+carId+'\')">确认冲正</button></div>');
+}
+function confirmReverse(pid,carId){
+  const reason=val('revReason');if(!reason)return err('请填写更正原因');
+  liveWrite(()=>api('POST',`/api/payments/${encodeURIComponent(pid)}/reverse`,{reason}),{btn:$('revSubmitBtn'),label:'正在冲正…',success:'已冲正，余额已重新计算',
+    successCb:(res)=>{if(res&&typeof res.remaining==='number')vmToast(`已撤销 ${fmt(res.amount)}，剩余欠款 ${fmt(res.remaining)}`,'success');openCarDetail(carId)}});
+}
+
+/* ---------- 跟进记录 ---------- */
+function pickFuStatus(v,btn){$('fuStatus').value=v;btn.parentNode.querySelectorAll('.status-chip').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}
+function showFollowUp(id){
+  const c=db.cars.find(x=>x.id===id),s=c.sale;
+  const chips=FOLLOW_STATUS.map(([v,t])=>`<button type="button" class="status-chip" data-st="${v}" onclick="pickFuStatus('${v}',this)">${t}</button>`).join('');
+  openModal('添加跟进记录 · '+c.model,
+    `<p class="tiny muted">${esc(s.customerName)} · 未收 ${fmt(s.remaining)}</p>`+
+    field('fuDate','联系日期','date',today())+
+    `<div class="field"><label>跟进状态（必选）</label><input type="hidden" id="fuStatus" value=""><div class="status-chips">${chips}</div></div>`+
+    field('fuSituation','补充情况（选填）','text')+
+    '<div class="two">'+field('fuPromised','承诺付款金额（元，选填）','number','','min="0" step="0.01"')+field('fuPromisedDate','承诺付款日期','date','')+'</div>'+
+    field('fuNextDate','下次跟进日期','date','')+
+    field('fuNote','备注（选填）','text')+
+    '<p class="tiny muted">承诺金额仅作记录，不计入实际收款；系统不会自动打电话或发送催收消息。</p>'+
+    '<button class="btn wide" id="fuSubmitBtn" onclick="commitFollowUp(\''+id+'\')">保存跟进</button>');
+}
+function commitFollowUp(id){
+  const date=val('fuDate'),status=val('fuStatus');if(!date)return err('请填写联系日期');if(!status)return err('请选择跟进状态');
+  const body={date,status,situation:val('fuSituation'),promised:num('fuPromised'),promisedDate:val('fuPromisedDate')||undefined,nextDate:val('fuNextDate')||undefined,note:val('fuNote')};
+  liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/follow-ups`,body),{btn:$('fuSubmitBtn'),label:'正在保存…',success:'跟进记录已保存',successCb:()=>openCarDetail(id)});
+}
+
+/* ---------- 客户建档 ---------- */
+function showCustomerAdd(){
+  openModal('新建客户档案',field('cuName','客户姓名（必填）')+field('cuPhone','联系电话（选填）')+field('cuNote','备注（选填）')+
+    '<button class="btn wide" id="cuSubmitBtn" onclick="commitCustomer()">保存客户</button>');
+}
+function commitCustomer(){
+  const name=val('cuName');if(!name)return err('请填写客户姓名');
+  liveWrite(()=>api('POST','/api/customers',{name,phone:val('cuPhone'),note:val('cuNote')}),{btn:$('cuSubmitBtn'),label:'正在保存…',success:'客户已建档'});
+}
+
+/* ---------- 车辆/销售详情 ---------- */
+function statusPill(st){
+  const map={settled:['已结清',''],overdue:['逾期','over'],upcoming:['未到期','due'],open:['灵活/未约定','open']};
+  const m=map[st]||[st,''];return `<span class="pill ${m[1]}">${m[0]}</span>`;
+}
 function openCarDetail(id){
   const c=db.cars.find(x=>x.id===id);if(!c)return;
-  const photo=`<div class="photo-box" data-pid="${c.id}">${c.photo?'<div class="photo-ph" data-loading>图片加载中…</div>':'<div class="photo-ph"><span>📷</span>暂无车辆图片</div>'}</div>`;
-  const info=`<div class="listrow"><span class="muted tiny">车架号</span><b>${esc(c.vin)}</b></div><div class="listrow"><span class="muted tiny">入库日期</span><b>${esc(c.date)}</b></div>${c.buy?`<div class="listrow"><span class="muted tiny">进货成本</span><b>${fmt(c.buy)}</b></div>`:''}${c.status==='sold'?`<div class="listrow"><span class="muted tiny">售价</span><b>${fmt(c.sale.price)}</b></div><div class="listrow"><span class="muted tiny">付款方式</span><b>${c.sale.method==='full'?'一次性付款':'分期付款'}</b></div>`:''}`;
+  const photo=`<div class="photo-box" data-pid="${c.id}"${c.photo?' data-has-photo="1"':''}>${c.photo?'<div class="photo-ph">图片加载中…</div>':'<div class="photo-ph"><span>📷</span>暂无车辆图片</div>'}</div>`;
+  let info=`<div class="listrow"><span class="muted tiny">车架号</span><b>${esc(c.vin)}</b></div><div class="listrow"><span class="muted tiny">入库日期</span><b>${esc(c.date)}</b></div>`;
+  if(c.buy)info+=`<div class="listrow"><span class="muted tiny">进货成本</span><b>${fmt(c.buy)}</b></div>`;
+  let body=photo+info;
   const acts=[];
-  if(c.status==='stock')acts.push(`<button class="btn wide" onclick="closeModal();showSale('${id}')">登记售出</button>`);
-  acts.push(`<button class="btn alt wide" onclick="showEdit('${id}')">修改车辆</button>`);
-  acts.push(`<div class="stack"><button class="btn ghost" onclick="pickCamera('${id}',this)">📷 拍照</button><button class="btn ghost" onclick="pickAlbum('${id}',this)">🖼️ 相册</button></div>`);
-  if(canManage()&&c.status==='stock')acts.push(`<button class="btn danger wide" onclick="showDelete('${id}')">删除车辆</button>`);
-  openModal(esc(c.model),photo+info+'<div class="stack" style="margin-top:12px">'+acts.join('')+'</div>');
-  if(typeof hydratePhotos==='function')hydratePhotos();
+  if(c.status==='stock'){
+    acts.push(`<button class="btn wide" onclick="closeModal();showSale('${id}')">登记售出</button>`);
+    acts.push(`<button class="btn alt wide" onclick="showEdit('${id}')">修改车辆</button>`);
+    acts.push(`<div class="stack"><button class="btn ghost" onclick="pickCamera('${id}',this)">📷 拍照</button><button class="btn ghost" onclick="pickAlbum('${id}',this)">🖼️ 相册</button></div>`);
+    if(canManage())acts.push(`<button class="btn danger wide" onclick="showDelete('${id}')">删除车辆</button>`);
+  }else if(c.sale){
+    const s=c.sale;
+    info=`<div class="listrow"><span class="muted tiny">客户</span><b>${esc(s.customerName)}${s.customerPhone?' · '+esc(s.customerPhone):''}</b></div>
+    <div class="listrow"><span class="muted tiny">成交价 / 首付</span><b>${fmt(s.price)} / ${fmt(s.down)}</b></div>
+    <div class="listrow"><span class="muted tiny">已收 / 未收</span><b><span class="success">${fmt(s.received)}</span> · <span class="warn">${fmt(s.remaining)}</span></b></div>
+    ${s.overdue>0?`<div class="listrow"><span class="muted tiny">已逾期（到期未还）</span><b class="warn">${fmt(s.overdue)}</b></div>`:''}
+    ${(s.fee>0||s.interest>0)?`<div class="listrow"><span class="muted tiny">费用 / 利息（单独统计）</span><b>${fmt(s.fee)} / ${fmt(s.interest)}</b></div>`:''}`;
+    body+=info;
+    if(s.flexible){
+      body+='<hr class="hr"><b>灵活还款</b><p class="tiny muted">未约定固定到期日，不自动判断逾期；以实际收款与下次跟进日期为准。</p>';
+    }else if(s.periodList.length){
+      body+='<hr class="hr"><b>还款计划</b>'+s.periodList.map(p=>{
+        const badge=p.settled?'<span class="pill">已收清</span>':p.overdue?'<span class="pill over">逾期</span>':'<span class="pill due">未到期</span>';
+        return `<div class="listrow row"><span>第${p.index}期 <span class="muted tiny">${p.date}</span> ${badge}</span><b>应付 ${fmt(p.amount)}${p.due>0?' · 欠 '+fmt(p.due):''}</b></div>`;
+      }).join('');
+    }
+    body+='<hr class="hr"><b>实际收款明细</b>'+(s.payments.length?s.payments.map(p=>{
+      const rev=p.reversed?` <span class="pill over">已冲正</span>`:'';
+      const corr=p.correction?`<div class="tiny muted">冲正原因：${esc(p.correction.reason)} · ${esc(p.correction.by)} ${esc(p.correction.at)}</div>`:'';
+      return `<div class="listrow"><div class="row"><span class="tiny muted">实际收款 ${esc(p.date)} · ${esc(p.payMethodLabel)}${rev}</span><b class="${p.reversed?'':'success'}">${p.reversed?'-':''}${fmt(p.amount)}</b></div><div class="tiny muted">${esc(p.note)}</div>${p.registeredAt?`<div class="tiny muted">登记时间：${esc(p.registeredAt)}</div>`:''}${corr}</div>`;
+    }).join(''):'<p class="muted">暂无收款</p>');
+    if(s.followUps.length){
+      body+='<hr class="hr"><b>跟进记录</b>'+s.followUps.map(f=>`<div class="listrow"><div class="row"><b class="tiny">${esc(f.date)}</b><span class="muted tiny">${f.nextDate?'下次跟进 '+esc(f.nextDate):''}</span></div><div>${f.statusLabel?`<span class="chip">${esc(f.statusLabel)}</span> `:''}${esc(f.situation||'')}</div>${f.promised>0?`<div class="tiny muted">承诺 ${fmt(f.promised)}${f.promisedDate?' · '+esc(f.promisedDate):''}（未到账不计入实收）</div>`:''}${f.note?`<div class="tiny muted">备注：${esc(f.note)}</div>`:''}${f.operator?`<div class="tiny muted">操作人：${esc(f.operator)}</div>`:''}</div>`).join('');
+    }
+    acts.push(`<button class="btn wide" onclick="closeModal();showPay('${id}')">💳 登记收款</button>`);
+    acts.push(`<button class="btn alt wide" onclick="showFollowUp('${id}')">📞 添加跟进</button>`);
+    if(canManage()){
+      const revocable=s.payments.filter(p=>!p.reversed);
+      if(revocable.length)acts.push(`<button class="btn danger wide" onclick="showReverse('${revocable[0].id}','${id}')">↩ 冲正最近一笔收款</button>`);
+    }
+  }
+  openModal(esc(c.model),body+'<div class="stack" style="margin-top:12px">'+acts.join('')+'</div>');
+  hydratePhotos();
 }
-function showDelete(id){let c=db.cars.find(x=>x.id===id);if(!c)return;openModal('删除车辆',`<p>确定删除这台车辆吗？</p><div class="listrow"><b>${esc(c.model)}</b><div class="mono">车架号：${esc(c.vin)}</div></div><p class="tiny muted">删除后进入回收站，可由管理员/店主恢复；已售车辆或有销售、收款记录的车辆不能删除。</p><div class="two"><button class="btn ghost" onclick="closeModal()">取消</button><button class="btn danger" id="delSubmitBtn" onclick="confirmDelete('${id}')">确认删除</button></div>`)}
-function confirmDelete(id){return liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/delete`,{}),{btn:$('delSubmitBtn'),label:'正在删除…',success:'车辆已删除'})}
-function showTrash(){let list=db.trash||[];let body=list.length?list.map(t=>`<div class="listrow row"><div><b>${esc(t.model)}</b><div class="mono">车架号：${esc(t.vin)}</div><div class="tiny muted">删除时间：${esc(t.deletedAt||'-')} · 操作人：${esc(t.deletedBy||'-')}</div></div>${canManage()?`<button class="btn ghost" onclick="showRestore('${t.id}')">恢复</button>`:''}</div>`).join(''):'<div class="empty">回收站为空</div>';if(!canManage()&&list.length)body+='<p class="tiny muted">仅管理员/店主可恢复车辆</p>';openModal('回收站',body)}
-function showRestore(id){let t=(db.trash||[]).find(x=>x.id===id);if(!t)return;openModal('恢复车辆',`<p>确定恢复这台车辆吗？</p><div class="listrow"><b>${esc(t.model)}</b><div class="mono">车架号：${esc(t.vin)}</div></div><div class="two"><button class="btn ghost" onclick="showTrash()">取消</button><button class="btn" id="restoreBtn-${id}" onclick="confirmRestore('${id}',this)">确认恢复</button></div>`)}
-function confirmRestore(id,btn){return liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/restore`,{}),{btn:btn||$('restoreBtn-'+id),label:'正在恢复…',success:'车辆已恢复'})}
-updateMode();if(liveToken)loadLive().catch(e=>{vmToast(e.message||'数据加载失败，请稍后点右下角刷新重试。','error')});
-</script>
-<style>
-html,body{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-.shell,main,section,.panel{max-width:100%;min-width:0}
-.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-.two>*{min-width:0;max-width:100%}
-body.modal-open{overflow:hidden;position:fixed;left:0;right:0;top:0;width:100%}
-#page-ledger .panel>.two:first-child{gap:8px;align-items:end}
-#page-ledger .panel>.two:first-child .field{min-width:0;margin-bottom:10px}
-#page-ledger input[type="date"]{display:block;width:100%;min-width:0;max-width:100%;height:34px;padding:4px 8px;font-size:14px;line-height:1.2}
-.auth-pending .shell,.auth-pending .tabs,.auth-pending .refresh-fab{display:none!important}.app-ready .login-gate{display:none!important}.note,.modebar,#page-more,.tab[data-page="more"]{display:none!important}.login-gate{position:fixed;inset:0;z-index:30;background:linear-gradient(145deg,#142344,#315fa7);display:flex;align-items:center;justify-content:center;padding:24px}.login-card{width:100%;max-width:390px;background:#fff;border-radius:22px;padding:28px 22px;box-shadow:0 24px 70px #07132966}.login-logo{width:58px;height:58px;margin:0 auto 14px;border-radius:17px;background:#315fe7;color:#fff;display:grid;place-items:center;font-size:28px;font-weight:800}.login-card h1{text-align:center;margin:0;font-size:25px}.login-card>p{text-align:center;color:#7a8598;margin:5px 0 24px}.login-card label{display:block;color:#52617b;font-size:14px;margin:13px 0 6px}.login-card input{display:block;width:100%;height:48px;border:1px solid #dce2eb;border-radius:11px;padding:0 13px;font-size:16px;outline:none}.login-card input:focus{border-color:#315fe7}.login-card button{width:100%;height:48px;margin-top:20px;border:0;border-radius:11px;background:#315fe7;color:#fff;font-size:16px;font-weight:700}.login-card button:disabled{opacity:.6}.remember-row{display:flex!important;flex-direction:row;align-items:center;gap:8px;font-size:13px!important;color:#52617b;margin:13px 0 0!important}.remember-row input{width:auto!important;height:auto!important;margin:0}.login-card small{display:block;text-align:center;color:#9aa3b1;margin-top:18px}.login-card #gateError{min-height:20px;margin-top:10px;color:#c74640;font-size:13px;text-align:center}.sessionbar{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid #ffffff24;color:#dbe6ff;font-size:13px}.sessionbar button{border:1px solid #ffffff38;background:#ffffff18;color:#fff;border-radius:8px;padding:6px 10px}
-.card-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin-top:0}.card-actions .btn{flex:1 1 40%;min-width:120px;margin-top:0}.card-actions .chip{display:inline-flex;align-items:center;justify-content:center;font-size:13px;padding:0 14px;border-radius:10px}
-.photo-box{margin:8px 0 4px}
-.car-photo{width:100%;height:150px;object-fit:contain;background:#eef1f6;border-radius:10px;cursor:zoom-in}
-.photo-ph{height:110px;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;color:#9aa6b8;background:#f0f3f8;border-radius:10px;font-size:13px}
-.photo-fail{height:110px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;color:#c74640;background:#fff3f1;border-radius:10px;font-size:13px}
-.photo-fail .btn{min-height:36px;padding:7px 14px}
-.add-photo-preview{margin-top:8px}.add-photo-preview img{max-height:160px}
-#lightbox{position:fixed;inset:0;background:rgba(10,16,30,.92);z-index:40;display:none;align-items:center;justify-content:center;padding:20px}
-#lightbox.open{display:flex}
-#lightbox img{max-width:100%;max-height:90vh;object-fit:contain;border-radius:10px}
-.spin{width:17px;height:17px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:vm-spin .75s linear infinite;flex:none}
-@keyframes vm-spin{to{transform:rotate(360deg)}}
-.btn.is-busy{pointer-events:none;opacity:.75}
-.btn.alt .spin,.btn.ghost .spin,.btn.danger .spin{border-color:rgba(49,95,231,.25);border-top-color:#315fe7}.refresh-fab .spin{border-color:rgba(255,255,255,.35);border-top-color:#fff}
-.ok-check{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#10a572;color:#fff;font-size:12px;flex:none}
-#vmToast{position:fixed;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:60;display:none;align-items:center;gap:8px;background:rgba(25,38,62,.94);color:#fff;padding:11px 16px;border-radius:13px;font-size:14px;box-shadow:0 10px 30px rgba(11,23,48,.35);max-width:86vw}
-#vmToast.show{display:flex}
-#vmToast .t-ok{color:#4ade9e}#vmToast .t-err{color:#ff9b96}
-.submit-status{min-height:22px;margin:2px 0 10px;font-size:13px;display:flex;align-items:center;gap:7px}
-.submit-status.err{color:#c74640}.submit-status.ok{color:#10a572}
-.submit-status .spin{border-color:rgba(25,38,62,.2);border-top-color:#315fe7}
-/* 库存双列与分类折叠 */
-.cat-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
-.cat-col{background:#fafbfe;border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
-.cat-head{display:flex;align-items:center;gap:6px;width:100%;padding:11px 12px;background:none;border:0;cursor:pointer;font-size:14px;font-weight:700;color:var(--ink);min-width:0}
-.cat-head .cat-count{margin-left:auto;font-size:11px;color:var(--muted);background:#eef2f9;border-radius:12px;padding:2px 8px;flex:none}
-.cat-head .chev{font-size:12px;color:var(--muted);transition:transform .2s ease;flex:none}
-.cat-col.collapsed .chev{transform:rotate(-90deg)}
-.cat-body{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px}
-.cat-col.collapsed .cat-body{display:none}
-.vcard{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px;cursor:pointer;min-width:0}
-.vcard:active{background:#f3f6ff}
-.vcard-top{display:flex;justify-content:space-between;gap:6px;align-items:center}
-.vcard b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.vcard .mono{font-size:11px;color:#68748a;overflow-wrap:anywhere;margin-top:3px}
-.vcard .pill{flex:none}
-.pending-section{margin-bottom:12px}
-.pending-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
-@media (max-width:360px){.cat-grid,.pending-grid{gap:8px}}
-</style>
-<script>
+function showEdit(id){
+  const c=db.cars.find(x=>x.id===id);
+  openModal('修改车辆',field('mModel','车型',c.model)+vinField('mVin','车架号',c.vin)+field('mBuy','进货成本（元）','number',c.buy,'min="0" step="0.01"')+
+    `<div class="field"><label>车辆类型</label><div class="row" style="gap:14px"><label style="display:flex;gap:6px"><input type="radio" name="mCategory" value="new" ${c.category==='new'?'checked':''}>新车</label><label style="display:flex;gap:6px"><input type="radio" name="mCategory" value="used" ${c.category==='used'?'checked':''}>旧车</label></div></div>`+
+    '<button class="btn wide" id="editSubmitBtn" onclick="editCar(\''+id+'\')">保存修改</button>');
+}
+function editCar(id){
+  const model=val('mModel'),vin=val('mVin'),buy=num('mBuy'),category=catVal();
+  if(!model||!vin)return err('请填写车型和车架号');
+  liveWrite(()=>api('PATCH',`/api/cars/${encodeURIComponent(id)}`,{model,vin,buy,category}),{btn:$('editSubmitBtn'),label:'正在保存…',success:'车辆修改已保存'});
+}
+function showDelete(id){
+  const c=db.cars.find(x=>x.id===id);
+  openModal('删除车辆',`<p>确定删除这台车辆吗？</p><div class="listrow"><b>${esc(c.model)}</b><div class="mono">车架号：${esc(c.vin)}</div></div><p class="tiny muted">删除后进入回收站，可由管理员/店主恢复；已售车辆不能删除。</p><div class="two"><button class="btn ghost" onclick="closeModal()">取消</button><button class="btn danger" id="delSubmitBtn" onclick="confirmDelete('${id}')">确认删除</button></div>`);
+}
+function confirmDelete(id){liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/delete`,{}),{btn:$('delSubmitBtn'),label:'正在删除…',success:'车辆已删除'})}
+function showTrash(){
+  const list=db.trash||[];
+  const body=list.length?list.map(t=>`<div class="listrow row"><div><b>${esc(t.model)}</b><div class="mono">车架号：${esc(t.vin)}</div><div class="tiny muted">删除时间：${esc(t.deletedAt||'-')} · 操作人：${esc(t.deletedBy||'-')}</div></div>${canManage()?`<button class="btn ghost" id="restoreBtn-${t.id}" onclick="confirmRestore('${t.id}',this)">恢复</button>`:''}</div>`).join(''):'<div class="empty">回收站为空</div>';
+  openModal('回收站',body);
+}
+function confirmRestore(id,btn){liveWrite(()=>api('POST',`/api/cars/${encodeURIComponent(id)}/restore`,{}),{btn:btn||$('restoreBtn-'+id),label:'正在恢复…',success:'车辆已恢复'});}
+
+/* ---------- 账本 ---------- */
+function showLedger(){
+  openModal('新增手工收支',selectField('lType','类型',[['income','收入'],['expense','支出']],'expense')+
+    field('lAmount','金额（元）','number','','min="0.01" step="0.01"')+field('lNote','备注（例如租金、进货款等）')+field('lDate','日期','date',today())+
+    '<button class="btn wide" id="ledgerSubmitBtn" onclick="commitLedger()">保存记录</button>');
+}
+function commitLedger(){
+  const amount=num('lAmount'),note=val('lNote'),date=val('lDate');
+  if(!(amount>0)||!note||!date)return err('请完整填写金额、备注和日期');
+  liveWrite(()=>api('POST','/api/ledger',{type:val('lType'),amount,note,date}),{btn:$('ledgerSubmitBtn'),label:'正在保存…',success:'记账成功'});
+}
+
+/* ---------- 客户详情 ---------- */
+async function openCustomerDetail(cid){
+  let detail;
+  try{detail=await api('GET','/api/customers/'+encodeURIComponent(cid))}catch(e){return err(e.message)}
+  const cu=detail.customer;
+  let body=`<div class="listrow"><span class="muted tiny">电话</span><b>${esc(cu.phone||'未登记')}</b></div>
+  <div class="row" style="margin-top:10px"><span class="muted">累计已收</span><b class="success">${fmt(detail.totalReceived)}</b></div>
+  <div class="row"><span class="muted">总欠款（多车汇总）</span><b class="warn">${fmt(detail.totalRemaining)}</b></div>
+  ${detail.totalOverdue>0?`<div class="row"><span class="muted">其中逾期</span><b class="warn">${fmt(detail.totalOverdue)}</b></div>`:''}`;
+  body+='<hr class="hr"><b>名下车辆销售</b>'+(detail.sales.length?detail.sales.map(x=>`<div class="listrow row" style="cursor:pointer" onclick="closeModal();openCarDetail('${x.carId||''}')"><div><b>${esc(x.model)}</b><div class="mono">${esc(x.vin)}</div></div><div style="text-align:right">${statusPill(x.status)}<div class="tiny muted">欠 ${fmt(x.remaining)}${x.overdue>0?' · 逾期 '+fmt(x.overdue):''}</div></div></div>`).join(''):'<p class="muted">暂无销售记录</p>');
+  if(detail.followUps.length){
+    body+='<hr class="hr"><b>跟进历史</b>'+detail.followUps.map(f=>`<div class="listrow"><div class="row"><b class="tiny">${esc(f.date)}</b><span class="muted tiny">${f.nextDate?'下次 '+esc(f.nextDate):''}</span></div><div>${f.statusLabel?`<span class="chip">${esc(f.statusLabel)}</span> `:''}${esc(f.situation||'')}</div>${f.promised>0?`<div class="tiny muted">承诺 ${fmt(f.promised)}${f.promisedDate?' · '+esc(f.promisedDate):''}</div>`:''}${f.note?`<div class="tiny muted">备注：${esc(f.note)}</div>`:''}${f.operator?`<div class="tiny muted">操作人：${esc(f.operator)}</div>`:''}</div>`).join('');
+  }
+  openModal(esc(cu.name),body);
+}
+
+/* ---------- 渲染 ---------- */
+function vcardHtml(c){return `<div class="vcard" role="button" tabindex="0" onclick="openCarDetail('${c.id}')"><div class="vcard-top"><b title="${esc(c.model)}">${esc(c.model)}</b><span class="pill ${c.status==='sold'?'sold':''}">${c.status==='sold'?'已售':'在库'}</span></div><div class="mono">${esc(c.vin)}</div></div>`}
+function catBlock(cat,label,items,searching){const collapsed=!searching&&collapsedCats[cat];return `<div class="cat-col${collapsed?' collapsed':''}" data-cat="${cat}"><button class="cat-head" type="button" onclick="toggleCat('${cat}')"><span class="cat-name">${label}</span><span class="cat-count">${items.length}</span><span class="chev">▾</span></button><div class="cat-body">${items.length?items.map(vcardHtml).join(''):'<div class="empty" style="padding:14px 6px">暂无</div>'}</div></div>`}
+
+function renderStock(){
+  const q=($('searchCar')?$('searchCar').value:'').toLowerCase();
+  const list=db.cars.filter(c=>(filter==='all'||c.status===filter)&&(c.model+' '+c.vin).toLowerCase().includes(q));
+  if(!list.length){$('carList').innerHTML='<div class="empty">未找到相关车辆</div>';return}
+  const pending=list.filter(c=>(c.category||'pending')==='pending');
+  const news=list.filter(c=>c.category==='new'),useds=list.filter(c=>c.category==='used');
+  let html='';
+  if(pending.length)html+=`<div class="pending-section"><h3 class="cat-title" style="font-size:14px;margin:14px 0 8px">待分类 · ${pending.length}</h3><div class="pending-grid">${pending.map(vcardHtml).join('')}</div></div>`;
+  html+='<div class="cat-grid">'+catBlock('new','新车',news,!!q)+catBlock('used','旧车',useds,!!q)+'</div>';
+  $('carList').innerHTML=html;
+  ['all','stock','sold'].forEach(f=>{$('filter-'+f).className='btn '+(filter===f?'alt':'ghost')});
+}
+function owedCar(c){return c.status==='sold'&&c.sale}
+function renderOwed(){
+  const q=($('searchOwed')?$('searchOwed').value:'').toLowerCase();
+  let list=db.cars.filter(owedCar).map(c=>({c,s:c.sale})).filter(x=>(x.s.customerName+' '+x.c.model+' '+x.c.vin).toLowerCase().includes(q));
+  if(owedFilter!=='all')list=list.filter(x=>x.s.status===owedFilter);
+  $('owedList').innerHTML=list.length?list.map(({c,s})=>`
+    <div class="item" onclick="openCarDetail('${c.id}')">
+      <div class="itemhead"><b>${esc(s.customerName)}</b>${statusPill(s.status)}</div>
+      <p class="mono">${esc(c.model)} · ${esc(c.vin)}</p>
+      <div class="row"><span class="tiny muted">${s.method==='full'?'一次性付款':s.flexible?'灵活还款':(s.cycle==='week'?'每周':'每月')+' · '+s.periods+'期'}</span><b class="warn">未收 ${fmt(s.remaining)}</b></div>
+      ${s.overdue>0?`<div class="row" style="margin-top:4px"><span class="tiny muted">已逾期</span><b class="warn">${fmt(s.overdue)}</b></div>`:''}
+    </div>`).join(''):'<div class="empty">暂无符合条件的销售记录</div>';
+  ['all','upcoming','overdue','open','settled'].forEach(f=>{$('of-'+f).className='btn '+(owedFilter===f?'alt':'ghost')});
+}
+function renderCustomers(){
+  const q=($('searchCustomer')?$('searchCustomer').value:'').toLowerCase();
+  const list=db.customers.filter(c=>(c.name+' '+c.phone).toLowerCase().includes(q));
+  $('customerList').innerHTML=list.length?list.map(c=>`
+    <div class="item" onclick="openCustomerDetail('${c.id}')">
+      <div class="itemhead"><b>${esc(c.name)}</b>${c.remaining>0?`<span class="pill ${c.status==='overdue'?'over':'due'}">${c.status==='overdue'?'逾期':'欠款中'}</span>`:'<span class="pill">无欠款</span>'}</div>
+      ${c.phone?`<p class="mono">${esc(c.phone)}</p>`:''}
+      <div class="row"><span class="tiny muted">${c.cars} 台车 · 已收 ${fmt(c.received)}</span><b class="warn">欠 ${fmt(c.remaining)}</b></div>
+    </div>`).join(''):'<div class="empty">暂无客户档案</div>';
+}
+function renderLedger(){
+  $('ledgerIn').textContent=fmt(db.dashboard.ledgerIn);$('ledgerOut').textContent=fmt(db.dashboard.ledgerOut);
+  $('ledgerList').innerHTML=db.ledger.length?db.ledger.map(x=>`<div class="listrow row"><div><b>${esc(x.note)}</b><div class="tiny muted">${esc(x.date)}</div></div><b class="${x.type==='income'?'success':'warn'}">${x.type==='income'?'+':'-'}${fmt(x.amount)}</b></div>`).join(''):'<div class="empty">还没有手工记账记录</div>';
+}
+function dueItemHtml(x){return `<div class="listrow row" onclick="openCarDetail('${x.carId||''}')"><div><b>${esc(x.customer)}</b><div class="tiny muted">${esc(x.model)} · 第${x.period}期 · ${x.date}</div></div><b class="warn">${fmt(x.due)}</b></div>`}
+function renderHome(){
+  const d=db.dashboard;
+  $('statStock').textContent=d.stock||0;$('statSold').textContent=d.sold||0;$('statDue').textContent=fmt(d.salesReceivable);
+  $('dashReceived').textContent=fmt(d.salesReceived);$('dashReceivable').textContent=fmt(d.salesReceivable);
+  $('dashOverdue').textContent=fmt(d.salesOverdue);$('dashProfit').textContent=fmt(d.grossProfit);
+  $('dashFeeInterest').textContent=fmt(d.fees)+' / '+fmt(d.interest);
+  $('homeRole').textContent=liveRole==='owner'?'店主':liveRole==='admin'?'管理员':'只读';
+  $('dueTodayList').innerHTML=(d.dueToday||[]).length?d.dueToday.map(dueItemHtml).join(''):'<p class="muted tiny">今日无到期款项</p>';
+  $('overdueList').innerHTML=(d.overdue||[]).length?d.overdue.map(dueItemHtml).join(''):'<p class="muted tiny">暂无逾期</p>';
+  $('upcomingList').innerHTML=(d.dueUpcoming||[]).length?d.dueUpcoming.map(dueItemHtml).join(''):'<p class="muted tiny">近期无到期款项</p>';
+  const chLabels=Object.fromEntries(db.payMethods.map(p=>[p.v,p.label]));
+  const chEntries=Object.entries(d.channels||{}).filter(([,v])=>v>0);
+  $('channelsList').innerHTML=chEntries.length?chEntries.map(([k,v])=>`<div class="listrow row"><span class="tiny muted">${esc(chLabels[k]||k)}</span><b>${fmt(v)}</b></div>`).join(''):'<p class="muted tiny">暂无渠道收款</p>';
+  $('followDueList').innerHTML=(d.followDue||[]).length?d.followDue.map(f=>`<div class="listrow row" style="cursor:pointer" onclick="openCarDetail('${f.carId||''}')"><div><b>${esc(f.customer)}</b><div class="tiny muted">${esc(f.model)} · ${esc(f.statusLabel||f.situation||'')} · 下次跟进 ${esc(f.nextDate)}</div></div></div>`).join(''):'<p class="muted tiny">近期无待跟进事项</p>';
+}
+function render(){renderHome();renderStock();renderOwed();renderCustomers();renderLedger();hydratePhotos()}
+
+async function loadLive(){
+  const state=await api('GET','/api/state');
+  db={cars:state.cars||[],trash:state.trash||[],customers:state.customers||[],dashboard:state.dashboard||{},ledger:state.ledger||[],payMethods:state.payMethods||[]};
+  liveRole=state.me.role||'';$('sessionUser').textContent=liveUser;
+  render();
+}
 function unlockApp(){document.body.classList.remove('auth-pending');document.body.classList.add('app-ready');$('sessionUser').textContent=liveUser}
 function lockApp(){document.body.classList.remove('app-ready');document.body.classList.add('auth-pending');$('gatePass').value='';$('gateError').textContent=''}
-async function gateLogin(){let button=$('gateSubmit');$('gateError').textContent='';btnBusy(button,'正在登录…');try{let remember=$('gateRemember').checked;let value=await api('POST','/auth/login',{username:$('gateUser').value.trim(),password:$('gatePass').value,remember});liveToken=value.token;liveUser=value.username;liveRole=value.role||'';authSave(liveToken,liveUser,liveRole,remember);await loadLive();unlockApp();switchPage('home');btnReset(button)}catch(e){$('gateError').textContent=e.message;btnReset(button)}}
-logoutLive=async function(remote){const lb=document.querySelector('.sessionbar button');if(lb)btnBusy(lb,'退出中…');if(remote&&liveToken)try{await api('POST','/auth/logout',{})}catch{}liveToken='';liveUser='';liveRole='';authClear();lockApp();if(lb)btnReset(lb)}
-if(liveToken){unlockApp()}else{lockApp()}
+async function gateLogin(){
+  const btn=$('gateSubmit');$('gateError').textContent='';btnBusy(btn,'正在登录…');
+  try{const remember=$('gateRemember').checked;const v=await api('POST','/auth/login',{username:$('gateUser').value.trim(),password:$('gatePass').value,remember});
+    liveToken=v.token;liveUser=v.username;liveRole=v.role||'';authSave(liveToken,liveUser,liveRole,remember);await loadLive();unlockApp();switchPage('home');}
+  catch(e){$('gateError').textContent=e.message;btnReset(btn)}
+}
+async function logoutLive(remote){if(remote&&liveToken)try{await api('POST','/auth/logout',{})}catch{}liveToken='';liveUser='';liveRole='';authClear();lockApp()}
+
+if(liveToken){loadLive().then(unlockApp).catch(e=>{vmToast(e.message||'数据加载失败，请稍后点刷新重试','error');lockApp()})}else{lockApp()}
 </script>
 </body>
 </html>
-
-
-
