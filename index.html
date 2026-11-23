@@ -283,8 +283,8 @@ render();
 <script>
 // 联机测试层：Quick Tunnel 地址仅供临时验收，演示模式仍使用 localStorage。
 const API_BASE=location.hostname.endsWith('github.io')?'https://contests-cheats-seek-elliott.trycloudflare.com':location.origin;
-const APP_VERSION='2.5.0';
-const APP_BUILD='20261122-2009';
+const APP_VERSION='2.6.0';
+const APP_BUILD='20261123-1836';
 const appVerEl=document.getElementById('appVer');if(appVerEl)appVerEl.textContent=APP_VERSION;
 const gateVerEl=document.getElementById('gateVer');if(gateVerEl)gateVerEl.textContent='车辆管家婆 · V'+APP_VERSION;
 function authRead(k){return localStorage.getItem(k)||sessionStorage.getItem(k)||''}
