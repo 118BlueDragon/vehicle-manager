@@ -265,6 +265,7 @@ body.modal-open{overflow:hidden;position:fixed;left:0;right:0;top:0;width:100%}
 const APP_VERSION='3.2.0';
 const ENV_TAG='';
 const API_BASE=location.hostname.endsWith('github.io')?'https://valium-entertaining-rats-practitioners.trycloudflare.com':location.origin;
+const SITE_BASE=(()=>{const p=location.pathname.replace(/[^/]*$/,'');return p.endsWith('/')?p:p+'/'})();
 const $=id=>document.getElementById(id);
 if(ENV_TAG){[['envTag'],['envTagLogin']].forEach(([id])=>{const t=$(id);if(t){t.textContent=ENV_TAG;t.hidden=false}})}
 const fmt=n=>'¥'+Number(n||0).toLocaleString('zh-CN',{maximumFractionDigits:2});
@@ -681,7 +682,7 @@ async function openScanVin(inputId,btn){
   const prev=$(scanTarget);$('scanVinInput').value=prev?prev.value||'':'';
   $('scanOverlay').classList.remove('hidden');
   scanStatus('正在启动摄像头…');
-  try{await loadScript('/static/lib/zxing.min.js');await startScanCamera();}
+  try{await loadScript(SITE_BASE+'static/lib/zxing.min.js');await startScanCamera();}
   catch(e){scanStatus('摄像头不可用或未授权：可从相册选图识别，或直接手动输入车架号。')}
 }
 /* 按 cover 计算视频尺寸并居中：等比放大填满横条，超出部分由 wrap 的 overflow:hidden 裁掉，不依赖实时流对 object-fit 的支持 */
@@ -734,7 +735,7 @@ function pickScanImage(btn,useOcr){
   inp.click();
 }
 async function decodeImageByCode(url){
-  await loadScript('/static/lib/zxing.min.js');
+  await loadScript(SITE_BASE+'static/lib/zxing.min.js');
   const img=await loadImage(url);
   const reader=new ZXing.BrowserMultiFormatReader();
   try{const res=reader.decodeFromImageElement(img);if(res&&res.getText()){onCodeDecoded(res.getText());return}}catch(e){}
@@ -743,12 +744,12 @@ async function decodeImageByCode(url){
 }
 async function ensureOcrWorker(){
   if(scanOcrWorker)return scanOcrWorker;
-  await loadScript('/static/lib/tesseract.min.js');
+  await loadScript(SITE_BASE+'static/lib/tesseract.min.js');
   const origin=location.origin;
   scanOcrWorker=await Tesseract.createWorker({
-    workerPath:origin+'/static/lib/worker.min.js',
-    corePath:origin+'/static/ocr/',
-    langPath:origin+'/static/ocr/',
+    workerPath:origin+SITE_BASE+'static/lib/worker.min.js',
+    corePath:origin+SITE_BASE+'static/ocr/',
+    langPath:origin+SITE_BASE+'static/ocr/',
     logger:()=>{}
   });
   await scanOcrWorker.loadLanguage(['eng']);
