@@ -312,7 +312,7 @@ function laterUpdate(){$('updateModal').classList.add('hidden')}
 function nowUpdate(){if(hasUnsaved()){if(!confirm('当前有尚未保存的车辆、销售、收款或记账内容，更新前请先保存；确定仍要更新吗？'))return}$('updateModal').classList.add('hidden');doUpdate()}
 async function doUpdate(){try{if('serviceWorker' in navigator){const regs=await navigator.serviceWorker.getRegistrations();for(const r of regs)await r.unregister()}}catch{}const url=new URL(location.href);url.searchParams.set('v',Date.now());location.replace(url.toString())}
 async function checkUpdateThenRefresh(){let manifest=null,verErr=false;try{manifest=await fetchManifest()}catch{verErr=true}if(manifest&&manifest.latest&&verNewer(manifest.latest,APP_VERSION)){showUpdateDialog(manifest);return}await originalRefresh();if(verErr)vmToast('版本检测暂时失败，当前数据已刷新，不影响正常使用。','warn')}
-async function api(method,path,body){let headers={'Content-Type':'application/json'};if(liveToken)headers.Authorization='Bearer '+liveToken;const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),25000);let res;try{res=await fetch(API_BASE+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body),signal:ctrl.signal})}catch(e){clearTimeout(timer);if(e&&e.name==='AbortError')throw new Error('请求超时，请检查网络后重试');throw new Error('后台暂时无法连接；本次操作没有保存，请勿重复提交。')}clearTimeout(timer);let data=await res.json().catch(()=>({}));if(!res.ok){if(res.status===401&&path!='/auth/login')logoutLive(false);throw new Error(data.error||`服务器错误 ${res.status}`)}return data}
+async function api(method,path,body){let headers={'Content-Type':'application/json'};if(liveToken)headers.Authorization='Bearer '+liveToken;const hasPhoto=!!(body&&typeof body==='object'&&body.photo);const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),hasPhoto?60000:25000);let res;try{res=await fetch(API_BASE+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body),signal:ctrl.signal})}catch(e){clearTimeout(timer);const net=new Error(e&&e.name==='AbortError'?'请求超时，请检查网络后重试':'后台暂时无法连接；本次操作没有保存，请勿重复提交。');net.network=true;throw net}clearTimeout(timer);let data=await res.json().catch(()=>({}));if(!res.ok){if(res.status===401&&path!='/auth/login')logoutLive(false);const err=new Error(data.error||`服务器错误 ${res.status}`);err.status=res.status;throw err}return data}
 function updateMode(){let on=!!liveToken;$('modeTitle').textContent=on?'联机测试模式':'演示模式';$('modeDesc').textContent=on?`已登录：${liveUser} · 数据保存到本机测试数据库`:'数据只保存在当前浏览器';$('modeButton').textContent=on?'退出联机':'联机测试';$('modeButton').onclick=on?()=>logoutLive(true):openLiveLogin;document.querySelector('.note').textContent=on?'联机测试版：仅使用模拟数据。电脑或 Tunnel 停止时无法保存，页面会明确报错。':'仅供功能体验：使用模拟数据；数据暂存在当前浏览器，不会同步到其他手机，也不是正式账本。正式使用需接后端、登录和备份。'}
 function openLiveLogin(){openModal('登录联机测试',field('loginUser','用户名')+field('loginPass','密码','password')+'<p class="tiny muted">仅限测试账号，请勿录入真实客户资料。</p><button class="btn wide" id="liveLoginBtn" onclick="loginLive()">登录</button>')}
 async function loginLive(){let btn=$('liveLoginBtn');btnBusy(btn,'正在登录…');try{let value=await api('POST','/auth/login',{username:val('loginUser'),password:val('loginPass')});liveToken=value.token;liveUser=value.username;liveRole=value.role||'';authSave(liveToken,liveUser,liveRole,false);await loadLive();closeModal();switchPage('home')}catch(e){vmToast(e.message,'error');btnReset(btn)}}
@@ -354,13 +354,13 @@ async function compressImage(file){
     const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('图片无法打开，可能已损坏'));i.src=url});
     let w=img.naturalWidth,h=img.naturalHeight;
     if(!w||!h)throw new Error('图片尺寸无效');
-    const maxEdge=1600;
+    const maxEdge=1280;
     if(Math.max(w,h)>maxEdge){const k=maxEdge/Math.max(w,h);w=Math.round(w*k);h=Math.round(h*k)}
     const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
     canvas.getContext('2d').drawImage(img,0,0,w,h);
-    let quality=0.85;
+    let quality=0.82;
     let blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality));
-    while(blob.size>800*1024&&quality>0.55){quality-=0.1;blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality))}
+    while(blob.size>500*1024&&quality>0.5){quality-=0.1;blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality))}
     if(blob.size>1500*1024)throw new Error('压缩后图片仍超过 1.5MB，请换一张照片');
     return blob;
   }finally{URL.revokeObjectURL(url)}
@@ -433,13 +433,21 @@ hydratePhotos();
 addCar=function(){if(!liveToken)return demoAddCar();let model=val('mModel'),vin=val('mVin'),buy=num('mBuy'),category=catVal();if(!model||!vin)return error('请填写车型和车架号');if(!category)return error('请选择新车或旧车');if(buy<0)return error('进货成本不能为负');addDraft={model,vin,buy,category};if(!pendingPhoto){openModal('无照片确认',`<p>当前车辆没有上传照片，确定直接保存吗？</p><div class="two"><button class="btn ghost" onclick="backToAdd()">返回拍照</button><button class="btn" onclick="submitAddCar()">确认无照片保存</button></div>`);return}submitAddCar()}
 function backToAdd(){showAdd(addDraft)}
 function addStatus(html,cls){const s=$('addSubmitStatus');if(!s)return;s.className='submit-status'+(cls?' '+cls:'');s.innerHTML=html||''}
+async function reconcileByVin(vin){
+  try{
+    const state=await api('GET','/api/state');
+    const target=String(vin||'').trim().toLowerCase();
+    const hit=(state.cars||[]).find(c=>String(c.vin||'').trim().toLowerCase()===target);
+    return hit?'saved':'notfound';
+  }catch(e){return 'unknown'}
+}
 async function submitAddCar(){
   if(!addDraft||vmSubmitting)return;
   const btn=$('addSubmitBtn');
   const hasPhoto=!!(pendingPhoto&&pendingPhoto.dataUrl);
   vmSubmitting=true;
-  btnBusy(btn,hasPhoto?'正在上传照片，请稍候…':'正在入库…');
-  addStatus(hasPhoto?'<span class="spin"></span>正在上传照片，请稍候…':'<span class="spin"></span>正在入库…');
+  btnBusy(btn,hasPhoto?'正在上传照片，网络较慢时请耐心等待，请勿重复点击…':'正在入库…');
+  addStatus(hasPhoto?'<span class="spin"></span>正在上传照片，网络较慢时请耐心等待，请勿重复点击…':'<span class="spin"></span>正在入库…');
   try{
     const body={model:addDraft.model,vin:addDraft.vin,buy:addDraft.buy,category:addDraft.category,date:today()};
     if(pendingPhoto)body.photo=pendingPhoto.dataUrl;
@@ -452,9 +460,16 @@ async function submitAddCar(){
     addStatus('');
     if(refreshed){vmToast('车辆入库成功','success');btnDone(btn)}else{vmToast('车辆已保存，数据刷新失败，请点右下角刷新','warn');btnReset(btn)}
   }catch(e){
-    const msg=e.message||'入库失败，请重试';
-    addStatus('<span>!</span>'+esc(msg),'err');
-    vmToast(msg,'error');
+    let msg=e.message||'入库失败，请重试';
+    let cls='err';let toastType='error';
+    if(e.network&&addDraft){
+      const result=await reconcileByVin(addDraft.vin);
+      if(result==='saved'){msg='该车架号可能已保存（网络超时未收到回执），请勿重复提交，可在车辆列表核对。';cls='warn';toastType='warn'}
+      else if(result==='unknown'){msg='结果未确认：网络异常，请稍后刷新列表核对，请勿重复提交。';cls='warn';toastType='warn'}
+      else{msg='未查询到该车架号，可检查信息后重新提交。'}
+    }
+    addStatus('<span>!</span>'+esc(msg),cls);
+    vmToast(msg,toastType);
     btnReset(btn);
   }finally{vmSubmitting=false}
 }
